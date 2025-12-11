@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { formatINRFromUSD } from "../utils/priceUtils";
 import Product from "./Product";
 
-const API_BASE = import.meta.env.VITE_API_BASE || "https://newplant-4.onrender.com";
+const API_BASE = "https://newplant-4.onrender.com";
 
 const IndorePlants = ({ addToCart, setCurrentPage }) => {
   const [plants, setPlants] = useState([]);

@@ -1,7 +1,7 @@
 import React from "react";
 import { generateInvoicePDF } from '../utils/invoiceUtils';
 
-const API_BASE = import.meta.env.VITE_API_BASE || "https://newplant-4.onrender.com";
+const API_BASE = "https://newplant-4.onrender.com";
 
 const PaymentTest = ({ orderId, setCurrentPage, onPaymentSuccess }) => {
   const [order, setOrder] = React.useState(null);

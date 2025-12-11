@@ -2,7 +2,7 @@ import React from 'react';
 import { formatINR } from '../utils/priceUtils';
 import jsPDF from 'jspdf';
 
-const API_BASE = import.meta.env.VITE_API_BASE || 'https://newplant-4.onrender.com';
+const API_BASE = 'https://newplant-4.onrender.com';
 
 const MyOrders = ({ setCurrentPage }) => {
   const [orders, setOrders] = React.useState([]);

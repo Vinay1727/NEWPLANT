@@ -1,6 +1,6 @@
 import React from "react";
 
-const API_BASE = import.meta.env.VITE_API_BASE || 'https://newplant-4.onrender.com';
+const API_BASE = 'https://newplant-4.onrender.com';
 
 const Contact = () => {
   const [formData, setFormData] = React.useState({

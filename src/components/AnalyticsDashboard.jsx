@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
  * Fetches live data from server analytics endpoint
  */
 
-const API_BASE = import.meta.env.VITE_API_BASE || 'https://newplant-4.onrender.com';
+const API_BASE = 'https://newplant-4.onrender.com';
 
 const AnalyticsDashboard = ({ adminToken }) => {
   const [analytics, setAnalytics] = useState(null);

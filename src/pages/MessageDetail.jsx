@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
-const API_BASE = import.meta.env.VITE_API_BASE || 'https://newplant-4.onrender.com';
+const API_BASE = 'https://newplant-4.onrender.com';
 
 export default function MessageDetail() {
   const { messageId } = useParams();
