@@ -1,6 +1,6 @@
 import React from "react";
 
-const API_BASE = 'https://newplant-4.onrender.com';
+const API_BASE = 'https://newplant-5.onrender.com';
 
 const Reviews = () => {
   const [reviews, setReviews] = React.useState([]);

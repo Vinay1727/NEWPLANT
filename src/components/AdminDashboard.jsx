@@ -3,7 +3,7 @@ import AnalyticsDashboard from './AnalyticsDashboard';
 import InventoryManagement from './InventoryManagement';
 import MarketingManagement from './MarketingManagement';
 
-const API_BASE = 'https://newplant-4.onrender.com';
+const API_BASE = 'https://newplant-5.onrender.com';
 
 const AdminDashboard = ({ setCurrentPage }) => {
   const [orders, setOrders] = React.useState([]);

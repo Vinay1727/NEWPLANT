@@ -3,7 +3,7 @@ import SearchModal from "./SearchModal";
 import LogoImg from "../assets/logo2.jpg";
 
 // Use Vite env variable (must be prefixed with VITE_) when building with Vite.
-const API_BASE = "https://newplant-4.onrender.com";
+const API_BASE = "https://newplant-5.onrender.com";
 
 const Navbar = ({ setCurrentPage, setShowCart, cartCount = 0, addToCart }) => {
   const [showLogin, setShowLogin] = useState(false);
