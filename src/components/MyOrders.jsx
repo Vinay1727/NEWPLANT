@@ -2,7 +2,7 @@ import React from 'react';
 import { formatINR } from '../utils/priceUtils';
 import jsPDF from 'jspdf';
 
-const API_BASE = 'https://newplant-5.onrender.com';
+const API_BASE = 'https://newplant-6.onrender.com';
 
 const MyOrders = ({ setCurrentPage }) => {
   const [orders, setOrders] = React.useState([]);
@@ -33,7 +33,7 @@ const MyOrders = ({ setCurrentPage }) => {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await resp.json();
-      
+
       if (data.success && Array.isArray(data.orders)) {
         setOrders(data.orders);
       } else {
@@ -282,8 +282,8 @@ const MyOrders = ({ setCurrentPage }) => {
       <div className="max-w-6xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold text-green-300">📦 Your Orders</h1>
-          <button 
-            onClick={() => setCurrentPage?.('home')} 
+          <button
+            onClick={() => setCurrentPage?.('home')}
             className="px-4 py-2 bg-green-700 rounded hover:bg-green-600 text-white"
           >
             ← Back
@@ -298,8 +298,8 @@ const MyOrders = ({ setCurrentPage }) => {
           <div className="bg-[#07110a] p-8 rounded-lg border border-green-700 text-center">
             <p className="text-2xl mb-4">📭</p>
             <p className="text-gray-300 text-lg">No orders found</p>
-            <button 
-              onClick={() => setCurrentPage?.('home')} 
+            <button
+              onClick={() => setCurrentPage?.('home')}
               className="mt-4 px-4 py-2 bg-green-600 rounded text-white hover:bg-green-500"
             >
               Start Shopping
@@ -314,11 +314,10 @@ const MyOrders = ({ setCurrentPage }) => {
                   <div
                     key={order._id}
                     onClick={() => setSelectedOrder(order)}
-                    className={`p-4 rounded-lg border cursor-pointer transition ${
-                      selectedOrder?._id === order._id
+                    className={`p-4 rounded-lg border cursor-pointer transition ${selectedOrder?._id === order._id
                         ? 'bg-green-900/20 border-green-600'
                         : 'bg-[#07110a] border-green-800 hover:border-green-600'
-                    }`}
+                      }`}
                   >
                     <div className="flex justify-between items-start mb-2">
                       <div>
@@ -443,7 +442,7 @@ const MyOrders = ({ setCurrentPage }) => {
                   </div>
                 )}
 
-                <button 
+                <button
                   onClick={() => downloadInvoicePDF(selectedOrder)}
                   className="w-full mt-6 px-4 py-2 bg-green-700 hover:bg-green-600 text-white rounded font-semibold transition flex items-center justify-center gap-2"
                 >

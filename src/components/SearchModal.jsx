@@ -6,7 +6,7 @@ const SearchModal = ({ showSearch, setShowSearch, setCurrentPage, addToCart }) =
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const API_BASE = "https://newplant-5.onrender.com";
+  const API_BASE = "https://newplant-6.onrender.com";
 
   useEffect(() => {
     if (!searchTerm.trim()) {
@@ -118,7 +118,7 @@ const SearchModal = ({ showSearch, setShowSearch, setCurrentPage, addToCart }) =
                           setCurrentPage?.('indoreplants');
                           handleClose();
                         }} className="px-3 py-1 border border-green-600 text-green-300 rounded-lg">Go to collection</button>
-                    </div>
+                      </div>
                     </div>
                   ))
                 )}

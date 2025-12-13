@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { formatINRFromUSD } from "../utils/priceUtils";
 import Product from "./Product";
 
-const API_BASE = "https://newplant-5.onrender.com";
+const API_BASE = "https://newplant-6.onrender.com";
 
 const IndorePlants = ({ addToCart, setCurrentPage }) => {
   const [plants, setPlants] = useState([]);
@@ -23,7 +23,7 @@ const IndorePlants = ({ addToCart, setCurrentPage }) => {
       setLoading(true);
       const response = await fetch(`${API_BASE}/api/plants/indoor`);
       const data = await response.json();
-      
+
       if (data.success) {
         setAllPlants(data.plants);
         // Sort by salePrice descending to get top 10 highest priced plants
@@ -83,7 +83,7 @@ const IndorePlants = ({ addToCart, setCurrentPage }) => {
         {error && (
           <div className="text-center py-12 bg-red-900/20 border border-red-700 rounded-lg p-6">
             <p className="text-red-400 text-lg">{error}</p>
-            <button 
+            <button
               onClick={fetchIndoorPlants}
               className="mt-4 px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg"
             >
@@ -97,7 +97,7 @@ const IndorePlants = ({ addToCart, setCurrentPage }) => {
             {/* Top 10 Price Scrollable Image Carousel + Detail View */}
             <div className="mb-16 p-8 bg-gradient-to-r from-green-900/30 to-emerald-900/30 border border-green-700 rounded-2xl">
               <h3 className="text-2xl font-bold mb-6 text-center">🌟 Top 10 Premium Plants</h3>
-              
+
               {/* Carousel and Details Grid */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Left: Carousel */}
@@ -106,15 +106,15 @@ const IndorePlants = ({ addToCart, setCurrentPage }) => {
                     {/* Main carousel image */}
                     <div className="relative h-64 md:h-80 overflow-hidden group">
                       {currentPlant?.imageUrl && (
-                        <img 
-                          src={currentPlant.imageUrl} 
+                        <img
+                          src={currentPlant.imageUrl}
                           alt={currentPlant.name}
                           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                         />
                       )}
                       {/* Gradient overlay for text readability */}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                      
+
                       {/* Plant name and price on image */}
                       <div className="absolute bottom-0 left-0 right-0 p-4 text-white z-10">
                         <h4 className="text-lg font-bold mb-1">{currentPlant?.name}</h4>
@@ -128,11 +128,10 @@ const IndorePlants = ({ addToCart, setCurrentPage }) => {
                         <button
                           key={i}
                           onClick={() => goToSlide(i)}
-                          className={`h-3 rounded-full transition-all duration-200 ${
-                            i === currentSlideIndex 
-                              ? 'bg-green-400 w-8' 
+                          className={`h-3 rounded-full transition-all duration-200 ${i === currentSlideIndex
+                              ? 'bg-green-400 w-8'
                               : 'bg-gray-500 w-3 hover:bg-green-300'
-                          }`}
+                            }`}
                           aria-label={`Go to image ${i + 1}`}
                         />
                       ))}
@@ -145,15 +144,14 @@ const IndorePlants = ({ addToCart, setCurrentPage }) => {
                           <button
                             key={plant._id}
                             onClick={() => goToSlide(i)}
-                            className={`flex-shrink-0 w-16 h-16 rounded-lg border-2 overflow-hidden transition-all duration-200 ${
-                              i === currentSlideIndex 
-                                ? 'border-green-400 ring-2 ring-green-400' 
+                            className={`flex-shrink-0 w-16 h-16 rounded-lg border-2 overflow-hidden transition-all duration-200 ${i === currentSlideIndex
+                                ? 'border-green-400 ring-2 ring-green-400'
                                 : 'border-gray-600 hover:border-green-500'
-                            }`}
+                              }`}
                           >
                             {plant.imageUrl ? (
-                              <img 
-                                src={plant.imageUrl} 
+                              <img
+                                src={plant.imageUrl}
                                 alt={plant.name}
                                 className="w-full h-full object-cover"
                               />
@@ -247,8 +245,8 @@ const IndorePlants = ({ addToCart, setCurrentPage }) => {
         {!loading && !error && allPlants.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-12">
             {allPlants.map((p) => (
-              <div 
-                key={p._id} 
+              <div
+                key={p._id}
                 onClick={() => setSelectedProduct(p)}
                 className="bg-gradient-to-br from-green-900/20 to-black/40 border border-green-700 p-6 rounded-2xl backdrop-blur-md hover:border-green-500 hover:shadow-lg hover:shadow-green-500/20 transition duration-300 cursor-pointer transform hover:-translate-y-1 group relative overflow-hidden"
               >
@@ -256,25 +254,25 @@ const IndorePlants = ({ addToCart, setCurrentPage }) => {
                   backgroundImage: "radial-gradient(circle, #22c55e 1px, transparent 1px)",
                   backgroundSize: "25px 25px"
                 }}></div>
-                
+
                 {p.imageUrl && (
                   <div className="w-full h-32 mb-4 rounded-lg overflow-hidden bg-gray-700 relative z-10">
-                    <img 
-                      src={p.imageUrl} 
+                    <img
+                      src={p.imageUrl}
                       alt={p.name}
                       className="w-full h-full object-cover group-hover:scale-110 transition transform"
                     />
                   </div>
                 )}
-                
+
                 <h3 className="text-xl font-bold mb-2 h-12 flex items-center">{p.name}</h3>
-                
+
                 {p.description && (
                   <p className="text-gray-300 mb-4 text-sm h-20 overflow-hidden line-clamp-3">
                     {p.description.replace(/<[^>]*>/g, '')}
                   </p>
                 )}
-                
+
                 <div className="flex items-center justify-between mt-auto pt-4 border-t border-green-700/30">
                   <div>
                     <p className="text-green-400 font-bold text-lg">₹{p.salePrice}</p>
@@ -283,13 +281,15 @@ const IndorePlants = ({ addToCart, setCurrentPage }) => {
                     )}
                   </div>
                   <button
-                    onClick={(e) => { e.stopPropagation(); addToCart({ 
-                      id: p._id, 
-                      name: p.name, 
-                      price: p.salePrice,
-                      currency: 'INR',
-                      image: p.imageUrl 
-                    });}}
+                    onClick={(e) => {
+                      e.stopPropagation(); addToCart({
+                        id: p._id,
+                        name: p.name,
+                        price: p.salePrice,
+                        currency: 'INR',
+                        image: p.imageUrl
+                      });
+                    }}
                     className="px-3 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg font-semibold transition"
                   >
                     Add

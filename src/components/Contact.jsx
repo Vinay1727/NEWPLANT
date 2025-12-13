@@ -1,6 +1,6 @@
 import React from "react";
 
-const API_BASE = 'https://newplant-5.onrender.com';
+const API_BASE = 'https://newplant-6.onrender.com';
 
 const Contact = () => {
   const [formData, setFormData] = React.useState({
@@ -58,7 +58,7 @@ const Contact = () => {
           {/* Contact Form */}
           <div className="bg-gradient-to-br from-green-900/20 to-black/40 border border-green-700 p-8 rounded-3xl">
             <h2 className="text-3xl font-bold mb-6 text-green-400">Send us a Message</h2>
-            
+
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-gray-300 mb-2 font-semibold">Full Name</label>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const API_BASE = "https://newplant-5.onrender.com";
+const API_BASE = "https://newplant-6.onrender.com";
 
 const Profile = () => {
   const [user, setUser] = useState(() => {
@@ -177,13 +177,13 @@ const Profile = () => {
     if (!newAddress.fullName || !newAddress.addressLine1 || !newAddress.city || !newAddress.pincode) {
       return alert("Please fill all required fields");
     }
-    
+
     const addressToAdd = {
       ...newAddress,
       id: Date.now().toString(),
       isDefault: addresses.length === 0 // First address is default
     };
-    
+
     const updatedAddresses = [...addresses, addressToAdd];
     const updatedDefault = addressToAdd.isDefault ? addressToAdd.id : defaultAddressId;
     // Persist to server
@@ -192,18 +192,18 @@ const Profile = () => {
       setDefaultAddressId(u.defaultAddressId || updatedDefault);
       setShowAddressForm(false);
       setNewAddress({
-      id: Date.now().toString(),
-      label: "",
-      fullName: "",
-      phone: "",
-      addressLine1: "",
-      addressLine2: "",
-      city: "",
-      state: "",
-      pincode: "",
-      country: "India",
-      isDefault: false
-    });
+        id: Date.now().toString(),
+        label: "",
+        fullName: "",
+        phone: "",
+        addressLine1: "",
+        addressLine2: "",
+        city: "",
+        state: "",
+        pincode: "",
+        country: "India",
+        isDefault: false
+      });
       alert("✓ Address added successfully!");
     });
   };
@@ -255,18 +255,18 @@ const Profile = () => {
       setDefaultPaymentId(u.defaultPaymentId || updatedDefault);
       setShowPaymentForm(false);
       setNewPayment({
-      id: Date.now().toString(),
-      type: "card",
-      label: "",
-      cardNumber: "",
-      cardholderName: "",
-      expiryDate: "",
-      cvv: "",
-      upiId: "",
-      giftCardNumber: "",
-      giftCardBalance: 0,
-      isDefault: false
-    });
+        id: Date.now().toString(),
+        type: "card",
+        label: "",
+        cardNumber: "",
+        cardholderName: "",
+        expiryDate: "",
+        cvv: "",
+        upiId: "",
+        giftCardNumber: "",
+        giftCardBalance: 0,
+        isDefault: false
+      });
       alert("✓ Payment method added!");
     });
   };
@@ -333,11 +333,10 @@ const Profile = () => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`py-4 px-4 rounded-xl font-semibold transition transform hover:scale-105 ${
-                activeTab === tab.id
+              className={`py-4 px-4 rounded-xl font-semibold transition transform hover:scale-105 ${activeTab === tab.id
                   ? "bg-green-600 text-white border-2 border-green-400"
                   : "bg-green-900/20 border-2 border-green-700 text-green-300 hover:border-green-500"
-              }`}
+                }`}
             >
               <div className="text-2xl mb-1">{tab.icon}</div>
               <div className="text-sm">{tab.label}</div>
@@ -493,14 +492,14 @@ const Profile = () => {
               <div className="bg-green-900/10 p-6 rounded-2xl border border-green-700/50 mb-8">
                 <h3 className="text-green-300 font-semibold mb-4">New Address</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <input type="text" placeholder="Label (e.g., Home, Office)" value={newAddress.label} onChange={(e) => setNewAddress({...newAddress, label: e.target.value})} className="px-4 py-3 bg-[#0b2a1a] border border-green-700 rounded-lg text-white outline-none focus:border-green-400" />
-                  <input type="text" placeholder="Full Name *" value={newAddress.fullName} onChange={(e) => setNewAddress({...newAddress, fullName: e.target.value})} className="px-4 py-3 bg-[#0b2a1a] border border-green-700 rounded-lg text-white outline-none focus:border-green-400" />
-                  <input type="tel" placeholder="Phone *" value={newAddress.phone} onChange={(e) => setNewAddress({...newAddress, phone: e.target.value})} className="px-4 py-3 bg-[#0b2a1a] border border-green-700 rounded-lg text-white outline-none focus:border-green-400" />
-                  <input type="text" placeholder="City *" value={newAddress.city} onChange={(e) => setNewAddress({...newAddress, city: e.target.value})} className="px-4 py-3 bg-[#0b2a1a] border border-green-700 rounded-lg text-white outline-none focus:border-green-400" />
-                  <input type="text" placeholder="State" value={newAddress.state} onChange={(e) => setNewAddress({...newAddress, state: e.target.value})} className="px-4 py-3 bg-[#0b2a1a] border border-green-700 rounded-lg text-white outline-none focus:border-green-400" />
-                  <input type="text" placeholder="Pincode *" value={newAddress.pincode} onChange={(e) => setNewAddress({...newAddress, pincode: e.target.value})} className="px-4 py-3 bg-[#0b2a1a] border border-green-700 rounded-lg text-white outline-none focus:border-green-400" />
-                  <textarea placeholder="Address Line 1 *" value={newAddress.addressLine1} onChange={(e) => setNewAddress({...newAddress, addressLine1: e.target.value})} className="px-4 py-3 bg-[#0b2a1a] border border-green-700 rounded-lg text-white outline-none focus:border-green-400 col-span-1 md:col-span-2" />
-                  <textarea placeholder="Address Line 2 (Optional)" value={newAddress.addressLine2} onChange={(e) => setNewAddress({...newAddress, addressLine2: e.target.value})} className="px-4 py-3 bg-[#0b2a1a] border border-green-700 rounded-lg text-white outline-none focus:border-green-400 col-span-1 md:col-span-2" />
+                  <input type="text" placeholder="Label (e.g., Home, Office)" value={newAddress.label} onChange={(e) => setNewAddress({ ...newAddress, label: e.target.value })} className="px-4 py-3 bg-[#0b2a1a] border border-green-700 rounded-lg text-white outline-none focus:border-green-400" />
+                  <input type="text" placeholder="Full Name *" value={newAddress.fullName} onChange={(e) => setNewAddress({ ...newAddress, fullName: e.target.value })} className="px-4 py-3 bg-[#0b2a1a] border border-green-700 rounded-lg text-white outline-none focus:border-green-400" />
+                  <input type="tel" placeholder="Phone *" value={newAddress.phone} onChange={(e) => setNewAddress({ ...newAddress, phone: e.target.value })} className="px-4 py-3 bg-[#0b2a1a] border border-green-700 rounded-lg text-white outline-none focus:border-green-400" />
+                  <input type="text" placeholder="City *" value={newAddress.city} onChange={(e) => setNewAddress({ ...newAddress, city: e.target.value })} className="px-4 py-3 bg-[#0b2a1a] border border-green-700 rounded-lg text-white outline-none focus:border-green-400" />
+                  <input type="text" placeholder="State" value={newAddress.state} onChange={(e) => setNewAddress({ ...newAddress, state: e.target.value })} className="px-4 py-3 bg-[#0b2a1a] border border-green-700 rounded-lg text-white outline-none focus:border-green-400" />
+                  <input type="text" placeholder="Pincode *" value={newAddress.pincode} onChange={(e) => setNewAddress({ ...newAddress, pincode: e.target.value })} className="px-4 py-3 bg-[#0b2a1a] border border-green-700 rounded-lg text-white outline-none focus:border-green-400" />
+                  <textarea placeholder="Address Line 1 *" value={newAddress.addressLine1} onChange={(e) => setNewAddress({ ...newAddress, addressLine1: e.target.value })} className="px-4 py-3 bg-[#0b2a1a] border border-green-700 rounded-lg text-white outline-none focus:border-green-400 col-span-1 md:col-span-2" />
+                  <textarea placeholder="Address Line 2 (Optional)" value={newAddress.addressLine2} onChange={(e) => setNewAddress({ ...newAddress, addressLine2: e.target.value })} className="px-4 py-3 bg-[#0b2a1a] border border-green-700 rounded-lg text-white outline-none focus:border-green-400 col-span-1 md:col-span-2" />
                 </div>
                 <div className="flex gap-2 mt-4">
                   <button onClick={addAddress} className="flex-1 py-3 bg-green-600 hover:bg-green-500 text-white font-semibold rounded-lg transition">
@@ -558,12 +557,12 @@ const Profile = () => {
             {showPaymentForm && (
               <div className="bg-green-900/10 p-6 rounded-2xl border border-green-700/50 mb-8">
                 <h3 className="text-green-300 font-semibold mb-4">Add Payment Method</h3>
-                
+
                 <div className="flex gap-2 mb-4">
                   {["card", "upi", "giftcard"].map(type => (
                     <button
                       key={type}
-                      onClick={() => setNewPayment({...newPayment, type})}
+                      onClick={() => setNewPayment({ ...newPayment, type })}
                       className={`px-4 py-2 rounded-lg font-semibold transition ${newPayment.type === type ? "bg-green-600 text-white" : "bg-gray-700 text-gray-300"}`}
                     >
                       {type === "card" ? "💳 Card" : type === "upi" ? "📱 UPI" : "🎁 Gift Card"}
@@ -572,27 +571,27 @@ const Profile = () => {
                 </div>
 
                 <div className="space-y-3 mb-4">
-                  <input type="text" placeholder="Label (e.g., My Visa)" value={newPayment.label} onChange={(e) => setNewPayment({...newPayment, label: e.target.value})} className="w-full px-4 py-3 bg-[#0b2a1a] border border-green-700 rounded-lg text-white outline-none focus:border-green-400" />
+                  <input type="text" placeholder="Label (e.g., My Visa)" value={newPayment.label} onChange={(e) => setNewPayment({ ...newPayment, label: e.target.value })} className="w-full px-4 py-3 bg-[#0b2a1a] border border-green-700 rounded-lg text-white outline-none focus:border-green-400" />
 
                   {newPayment.type === "card" && (
                     <>
-                      <input type="text" placeholder="Card Number" value={newPayment.cardNumber} onChange={(e) => setNewPayment({...newPayment, cardNumber: e.target.value.replace(/\D/g, '').slice(0, 16)})} className="w-full px-4 py-3 bg-[#0b2a1a] border border-green-700 rounded-lg text-white outline-none focus:border-green-400" />
-                      <input type="text" placeholder="Cardholder Name" value={newPayment.cardholderName} onChange={(e) => setNewPayment({...newPayment, cardholderName: e.target.value})} className="w-full px-4 py-3 bg-[#0b2a1a] border border-green-700 rounded-lg text-white outline-none focus:border-green-400" />
+                      <input type="text" placeholder="Card Number" value={newPayment.cardNumber} onChange={(e) => setNewPayment({ ...newPayment, cardNumber: e.target.value.replace(/\D/g, '').slice(0, 16) })} className="w-full px-4 py-3 bg-[#0b2a1a] border border-green-700 rounded-lg text-white outline-none focus:border-green-400" />
+                      <input type="text" placeholder="Cardholder Name" value={newPayment.cardholderName} onChange={(e) => setNewPayment({ ...newPayment, cardholderName: e.target.value })} className="w-full px-4 py-3 bg-[#0b2a1a] border border-green-700 rounded-lg text-white outline-none focus:border-green-400" />
                       <div className="grid grid-cols-2 gap-2">
-                        <input type="text" placeholder="MM/YY" value={newPayment.expiryDate} onChange={(e) => setNewPayment({...newPayment, expiryDate: e.target.value})} className="px-4 py-3 bg-[#0b2a1a] border border-green-700 rounded-lg text-white outline-none focus:border-green-400" />
-                        <input type="password" placeholder="CVV" value={newPayment.cvv} onChange={(e) => setNewPayment({...newPayment, cvv: e.target.value.slice(0, 3)})} className="px-4 py-3 bg-[#0b2a1a] border border-green-700 rounded-lg text-white outline-none focus:border-green-400" />
+                        <input type="text" placeholder="MM/YY" value={newPayment.expiryDate} onChange={(e) => setNewPayment({ ...newPayment, expiryDate: e.target.value })} className="px-4 py-3 bg-[#0b2a1a] border border-green-700 rounded-lg text-white outline-none focus:border-green-400" />
+                        <input type="password" placeholder="CVV" value={newPayment.cvv} onChange={(e) => setNewPayment({ ...newPayment, cvv: e.target.value.slice(0, 3) })} className="px-4 py-3 bg-[#0b2a1a] border border-green-700 rounded-lg text-white outline-none focus:border-green-400" />
                       </div>
                     </>
                   )}
 
                   {newPayment.type === "upi" && (
-                    <input type="text" placeholder="UPI ID (e.g., user@bankname)" value={newPayment.upiId} onChange={(e) => setNewPayment({...newPayment, upiId: e.target.value})} className="w-full px-4 py-3 bg-[#0b2a1a] border border-green-700 rounded-lg text-white outline-none focus:border-green-400" />
+                    <input type="text" placeholder="UPI ID (e.g., user@bankname)" value={newPayment.upiId} onChange={(e) => setNewPayment({ ...newPayment, upiId: e.target.value })} className="w-full px-4 py-3 bg-[#0b2a1a] border border-green-700 rounded-lg text-white outline-none focus:border-green-400" />
                   )}
 
                   {newPayment.type === "giftcard" && (
                     <>
-                      <input type="text" placeholder="Gift Card Number" value={newPayment.giftCardNumber} onChange={(e) => setNewPayment({...newPayment, giftCardNumber: e.target.value})} className="w-full px-4 py-3 bg-[#0b2a1a] border border-green-700 rounded-lg text-white outline-none focus:border-green-400" />
-                      <input type="number" placeholder="Balance (₹)" value={newPayment.giftCardBalance} onChange={(e) => setNewPayment({...newPayment, giftCardBalance: parseFloat(e.target.value)})} className="w-full px-4 py-3 bg-[#0b2a1a] border border-green-700 rounded-lg text-white outline-none focus:border-green-400" />
+                      <input type="text" placeholder="Gift Card Number" value={newPayment.giftCardNumber} onChange={(e) => setNewPayment({ ...newPayment, giftCardNumber: e.target.value })} className="w-full px-4 py-3 bg-[#0b2a1a] border border-green-700 rounded-lg text-white outline-none focus:border-green-400" />
+                      <input type="number" placeholder="Balance (₹)" value={newPayment.giftCardBalance} onChange={(e) => setNewPayment({ ...newPayment, giftCardBalance: parseFloat(e.target.value) })} className="w-full px-4 py-3 bg-[#0b2a1a] border border-green-700 rounded-lg text-white outline-none focus:border-green-400" />
                     </>
                   )}
                 </div>
@@ -616,7 +615,7 @@ const Profile = () => {
                 {paymentMethods.map(pm => (
                   <div key={pm.id} className={`p-6 rounded-2xl border-2 transition ${defaultPaymentId === pm.id ? "bg-green-900/30 border-green-500" : "bg-green-900/10 border-green-700/50"}`}>
                     {defaultPaymentId === pm.id && <div className="text-xs bg-green-600 w-fit px-2 py-1 rounded text-white mb-2">⭐ Default</div>}
-                    
+
                     {pm.type === "card" && (
                       <>
                         <p className="text-green-300 font-semibold mb-2">💳 {pm.label}</p>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Product from "./Product";
 import { formatINRFromUSD } from "../utils/priceUtils";
 
-const API_BASE = "https://newplant-5.onrender.com";
+const API_BASE = "https://newplant-6.onrender.com";
 
 const OutdoorPlants = ({ addToCart }) => {
   const [plants, setPlants] = useState([]);
@@ -19,7 +19,7 @@ const OutdoorPlants = ({ addToCart }) => {
       setLoading(true);
       const response = await fetch(`${API_BASE}/api/plants/outdoor`);
       const data = await response.json();
-      
+
       if (data.success) {
         setPlants(data.plants);
         setError(null);
@@ -52,7 +52,7 @@ const OutdoorPlants = ({ addToCart }) => {
         {error && (
           <div className="text-center py-12 bg-red-900/20 border border-red-700 rounded-lg p-6">
             <p className="text-red-400 text-lg">{error}</p>
-            <button 
+            <button
               onClick={fetchOutdoorPlants}
               className="mt-4 px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg"
             >
@@ -70,8 +70,8 @@ const OutdoorPlants = ({ addToCart }) => {
         {!loading && !error && plants.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {plants.map((p) => (
-              <div 
-                key={p._id} 
+              <div
+                key={p._id}
                 onClick={() => setSelectedProduct(p)}
                 className="bg-gradient-to-br from-green-900/20 to-black/40 border border-green-700 p-6 rounded-2xl backdrop-blur-md hover:border-green-500 hover:shadow-lg hover:shadow-green-500/20 transition duration-300 cursor-pointer transform hover:-translate-y-1 group relative overflow-hidden"
               >
@@ -79,25 +79,25 @@ const OutdoorPlants = ({ addToCart }) => {
                   backgroundImage: "radial-gradient(circle, #22c55e 1px, transparent 1px)",
                   backgroundSize: "25px 25px"
                 }}></div>
-                
+
                 {p.imageUrl && (
                   <div className="w-full h-32 mb-4 rounded-lg overflow-hidden bg-gray-700 relative z-10">
-                    <img 
-                      src={p.imageUrl} 
+                    <img
+                      src={p.imageUrl}
                       alt={p.name}
                       className="w-full h-full object-cover group-hover:scale-110 transition transform"
                     />
                   </div>
                 )}
-                
+
                 <h3 className="text-xl font-bold mb-2 h-12 flex items-center relative z-10">{p.name}</h3>
-                
+
                 {p.description && (
                   <p className="text-gray-300 mb-4 text-sm h-20 overflow-hidden line-clamp-3 relative z-10">
                     {p.description.replace(/<[^>]*>/g, '')}
                   </p>
                 )}
-                
+
                 <div className="flex items-center justify-between mt-auto pt-4 border-t border-green-700/30 relative z-10">
                   <div>
                     <p className="text-green-400 font-bold text-lg">₹{p.salePrice}</p>
@@ -106,13 +106,15 @@ const OutdoorPlants = ({ addToCart }) => {
                     )}
                   </div>
                   <button
-                    onClick={(e) => { e.stopPropagation(); addToCart({ 
-                      id: p._id, 
-                      name: p.name, 
-                      price: p.salePrice,
-                      currency: 'INR',
-                      image: p.imageUrl 
-                    });}}
+                    onClick={(e) => {
+                      e.stopPropagation(); addToCart({
+                        id: p._id,
+                        name: p.name,
+                        price: p.salePrice,
+                        currency: 'INR',
+                        image: p.imageUrl
+                      });
+                    }}
                     className="px-3 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg font-semibold transition"
                   >
                     Add

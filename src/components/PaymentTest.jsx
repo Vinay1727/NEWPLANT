@@ -1,7 +1,7 @@
 import React from "react";
 import { generateInvoicePDF } from '../utils/invoiceUtils';
 
-const API_BASE = "https://newplant-5.onrender.com";
+const API_BASE = "https://newplant-6.onrender.com";
 
 const PaymentTest = ({ orderId, setCurrentPage, onPaymentSuccess }) => {
   const [order, setOrder] = React.useState(null);
@@ -83,8 +83,8 @@ const PaymentTest = ({ orderId, setCurrentPage, onPaymentSuccess }) => {
         <div className="mb-4">
           <div className="text-sm text-gray-400 mb-2">Choose payment method</div>
           <div className="flex gap-2 mb-3">
-            {['card','upi','netbanking'].map(m => (
-              <button key={m} onClick={() => setMethod(m)} className={`px-3 py-2 rounded ${method===m? 'bg-green-700' : 'bg-transparent border border-green-700'}`}>
+            {['card', 'upi', 'netbanking'].map(m => (
+              <button key={m} onClick={() => setMethod(m)} className={`px-3 py-2 rounded ${method === m ? 'bg-green-700' : 'bg-transparent border border-green-700'}`}>
                 {m.toUpperCase()}
               </button>
             ))}

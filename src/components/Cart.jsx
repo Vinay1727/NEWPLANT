@@ -1,7 +1,7 @@
 import React from "react";
 import { toINR, formatINR } from "../utils/priceUtils";
 
-const API_BASE = "https://newplant-5.onrender.com";
+const API_BASE = "https://newplant-6.onrender.com";
 
 const Cart = ({ showCart, setShowCart, cartItems = [], updateQuantity, removeItem, setCurrentPage, setPaymentOrderId }) => {
   // Compute subtotal in INR. Items may be stored in USD (default) or INR (csv/backend).
@@ -129,7 +129,7 @@ const Cart = ({ showCart, setShowCart, cartItems = [], updateQuantity, removeIte
         </div>
       )}
 
-      
+
     </>
   );
 };

@@ -3,7 +3,7 @@
  * Create, manage, and track promotional codes
  */
 
-const API_BASE = 'https://newplant-5.onrender.com';
+const API_BASE = 'https://newplant-6.onrender.com';
 
 export const discountManager = {
   // Get all discount codes
@@ -12,11 +12,11 @@ export const discountManager = {
       const response = await fetch(`${API_BASE}/api/admin/discounts`, {
         headers: { 'Authorization': `Bearer ${token}` },
       }).catch(() => null);
-      
+
       if (response && response.ok) {
         return await response.json();
       }
-      
+
       // Mock data for testing
       return [
         {
@@ -202,11 +202,11 @@ export const emailCampaignManager = {
       const response = await fetch(`${API_BASE}/api/admin/campaigns`, {
         headers: { 'Authorization': `Bearer ${token}` },
       }).catch(() => null);
-      
+
       if (response && response.ok) {
         return await response.json();
       }
-      
+
       // Mock data for testing
       return [
         {
@@ -259,11 +259,11 @@ export const featuredProductsManager = {
       const response = await fetch(`${API_BASE}/api/admin/featured-products`, {
         headers: { 'Authorization': `Bearer ${token}` },
       }).catch(() => null);
-      
+
       if (response && response.ok) {
         return await response.json();
       }
-      
+
       // Mock data for testing
       return [
         {

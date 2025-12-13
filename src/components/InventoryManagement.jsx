@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
  * Track stock levels, set alerts, manage reorders
  */
 
-const API_BASE = 'https://newplant-5.onrender.com';
+const API_BASE = 'https://newplant-6.onrender.com';
 
 const InventoryManagement = ({ adminToken }) => {
   const [products, setProducts] = useState([]);
@@ -60,7 +60,7 @@ const InventoryManagement = ({ adminToken }) => {
       }
 
       setProducts(data);
-      
+
       // Filter low stock items
       const low = data.filter(p => (p.stock || 0) < lowStockThreshold);
       setLowStockItems(low);
@@ -119,7 +119,7 @@ const InventoryManagement = ({ adminToken }) => {
     }
   };
 
-  const filteredProducts = products.filter(p => 
+  const filteredProducts = products.filter(p =>
     p.name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -217,7 +217,7 @@ const InventoryManagement = ({ adminToken }) => {
                 onClick={() => {
                   if (!addName) { alert('Enter product name'); return; }
                   const newProduct = {
-                    _id: `local-${Date.now()}-${Math.floor(Math.random()*1000)}`,
+                    _id: `local-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
                     name: addName,
                     price: Number(addPrice) || 0,
                     stock: Number(addStock) || 0,
@@ -278,11 +278,10 @@ const InventoryManagement = ({ adminToken }) => {
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600">₹{product.price}</td>
                   <td className="px-6 py-4 text-sm">
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                      stock === 0 ? 'bg-red-100 text-red-700' :
-                      isLow ? 'bg-yellow-100 text-yellow-700' :
-                      'bg-green-100 text-green-700'
-                    }`}>
+                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${stock === 0 ? 'bg-red-100 text-red-700' :
+                        isLow ? 'bg-yellow-100 text-yellow-700' :
+                          'bg-green-100 text-green-700'
+                      }`}>
                       {stock === 0 ? 'Out of Stock' : isLow ? 'Low Stock' : 'In Stock'}
                     </span>
                   </td>
