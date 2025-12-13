@@ -230,7 +230,7 @@ async function start() {
 
     // Sync CSV data to database on startup for all known categories
     try {
-      console.log('Starting CSV to database sync for categories:', Object.keys(CSV_PATHS).join(', '));
+      console.log('🔄 Starting CSV to database sync for categories:', Object.keys(CSV_PATHS).join(', '));
       const categories = Object.keys(CSV_PATHS);
       const results = await Promise.all(categories.map(cat => syncCSVToDatabase(cat).catch(err => ({ success: false, message: err && err.message ? err.message : String(err) }))));
       console.log('CSV Sync Results:');
@@ -1425,3 +1425,53 @@ async function start() {
 }
 
 start();
+// ... inside /api/orders ...
+await order.save();
+
+// Send order confirmation email (Awaited to ensure execution on Render)
+if (transporter && order.deliveryEmail) {
+  console.log(`MAIL FUNCTION CALLED for ${order.deliveryEmail}`);
+  try {
+    // ... HTML generation ...
+    const mail = {
+      from: SMTP_FROM,
+      to: order.deliveryEmail,
+      subject: `✅ Order Confirmed - Order #${order._id.toString().slice(-8)}`,
+      html: confirmationHtml
+    };
+
+    // Await the email sending so the process doesn't exit/sleep before completion
+    await transporter.sendMail(mail);
+    console.log(`MAIL SENT SUCCESSFULLY to ${order.deliveryEmail}`);
+  } catch (err) {
+    console.error('❌ Error sending order confirmation email:', err.message);
+    // Do NOT throw error, ensure response is still sent
+  }
+}
+
+return res.json({ success: true, orderId: order._id, order });
+// Debug: Direct Email Test Route
+app.post('/api/test-email', async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ error: 'Email required' });
+
+    if (!transporter) {
+      return res.status(500).json({ error: 'Transporter not initialized. Check SMTP_ variables.' });
+    }
+
+    console.log(`MAIL FUNCTION CALLED for test email to ${email}`);
+    const info = await transporter.sendMail({
+      from: SMTP_FROM, // Ensure this matches your authenticated user
+      to: email,
+      subject: '🔍 Debug Test Email From Render',
+      text: 'If you receive this, the email piping is working correctly.'
+    });
+    console.log(`MAIL SENT SUCCESSFULLY for test email to ${email}`);
+
+    res.json({ success: true, message: 'Email passed to SMTP server', info });
+  } catch (err) {
+    console.error('❌ Test email failed:', err);
+    res.status(500).json({ success: false, error: err.message, stack: err.stack });
+  }
+});
