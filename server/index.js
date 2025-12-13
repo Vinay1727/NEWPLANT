@@ -354,7 +354,7 @@ async function start() {
       }
 
       console.log(`✅ OTP signup request successful for ${email}`);
-      return res.json({ success: true, message: 'OTP sent to your email', email });
+      return res.json({ success: true, message: 'OTP sent! Please check your inbox and SPAM folder.', email });
     } catch (err) {
       console.error('❌ Error in OTP signup request:', err);
       return res.status(500).json({ success: false, message: 'Server error: ' + err.message });
