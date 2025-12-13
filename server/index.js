@@ -448,22 +448,42 @@ async function start() {
   });
 
   // Signup
+  // Signup - MODIFIED: Now triggers OTP flow instead of direct creation
   app.post('/api/signup', async (req, res) => {
     try {
       const { name, email, password } = req.body;
       if (!name || !email || !password) return res.status(400).json({ success: false, message: 'Missing fields' });
 
+      // Check if user already exists
       const existing = await User.findOne({ email });
-      if (existing) return res.status(400).json({ success: false, message: 'Email already registered' });
+      if (existing) return res.status(400).json({ success: false, message: 'Email already registered. Please login.' });
 
-      const hashed = await bcrypt.hash(password, 10);
-      const user = new User({ name, email, password: hashed });
-      await user.save();
+      // Instead of creating user directly, we generate an OTP and ask client to verify
 
-      const token = jwt.sign({ id: user._id, email: user.email }, JWT_SECRET, { expiresIn: '7d' });
-      const out = user.toObject();
-      delete out.password;
-      return res.json({ success: true, token, user: out });
+      // 1. Generate OTP
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+      const otpHash = await bcrypt.hash(otp, 10);
+      const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 mins
+
+      // 2. Save OTP (upsert)
+      await Otp.findOneAndUpdate(
+        { email: email.toLowerCase() },
+        { email: email.toLowerCase(), otpHash, expiresAt },
+        { upsert: true, new: true }
+      );
+
+      // 3. Send OTP Email
+      await sendOtpEmail(email, otp);
+
+      // 4. Return special response telling frontend to switch to OTP mode
+      // The frontend must handle `requiresOtp: true` to show the OTP input dialog
+      return res.json({
+        success: true,
+        message: 'Please verify your email. OTP sent to your inbox/spam.',
+        requiresOtp: true,
+        email
+      });
+
     } catch (err) {
       console.error(err);
       return res.status(500).json({ success: false, message: 'Server error' });
