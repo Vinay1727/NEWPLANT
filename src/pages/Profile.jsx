@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const API_BASE = "https://newplant-6.onrender.com";
+const API_BASE = "https://newplant-7.onrender.com";
 
 const Profile = () => {
   const [user, setUser] = useState(() => {
@@ -334,8 +334,8 @@ const Profile = () => {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`py-4 px-4 rounded-xl font-semibold transition transform hover:scale-105 ${activeTab === tab.id
-                  ? "bg-green-600 text-white border-2 border-green-400"
-                  : "bg-green-900/20 border-2 border-green-700 text-green-300 hover:border-green-500"
+                ? "bg-green-600 text-white border-2 border-green-400"
+                : "bg-green-900/20 border-2 border-green-700 text-green-300 hover:border-green-500"
                 }`}
             >
               <div className="text-2xl mb-1">{tab.icon}</div>

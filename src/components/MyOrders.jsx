@@ -2,7 +2,7 @@ import React from 'react';
 import { formatINR } from '../utils/priceUtils';
 import jsPDF from 'jspdf';
 
-const API_BASE = 'https://newplant-6.onrender.com';
+const API_BASE = 'https://newplant-7.onrender.com';
 
 const MyOrders = ({ setCurrentPage }) => {
   const [orders, setOrders] = React.useState([]);
@@ -315,8 +315,8 @@ const MyOrders = ({ setCurrentPage }) => {
                     key={order._id}
                     onClick={() => setSelectedOrder(order)}
                     className={`p-4 rounded-lg border cursor-pointer transition ${selectedOrder?._id === order._id
-                        ? 'bg-green-900/20 border-green-600'
-                        : 'bg-[#07110a] border-green-800 hover:border-green-600'
+                      ? 'bg-green-900/20 border-green-600'
+                      : 'bg-[#07110a] border-green-800 hover:border-green-600'
                       }`}
                   >
                     <div className="flex justify-between items-start mb-2">

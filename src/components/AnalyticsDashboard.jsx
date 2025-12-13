@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
  * Fetches live data from server analytics endpoint
  */
 
-const API_BASE = 'https://newplant-6.onrender.com';
+const API_BASE = 'https://newplant-7.onrender.com';
 
 const AnalyticsDashboard = ({ adminToken }) => {
   const [analytics, setAnalytics] = useState(null);
@@ -147,8 +147,8 @@ const AnalyticsDashboard = ({ adminToken }) => {
                 <div className="w-full bg-gray-700/50 rounded-full h-2.5">
                   <div
                     className={`h-2.5 rounded-full ${item._id === 'paid' ? 'bg-gradient-to-r from-emerald-500 to-green-500' :
-                        item._id === 'pending' ? 'bg-gradient-to-r from-yellow-500 to-orange-500' :
-                          'bg-gradient-to-r from-red-500 to-pink-500'
+                      item._id === 'pending' ? 'bg-gradient-to-r from-yellow-500 to-orange-500' :
+                        'bg-gradient-to-r from-red-500 to-pink-500'
                       }`}
                     style={{ width: `${Math.min(100, (item.count / (summary?.totalOrders || 1)) * 100)}%` }}
                   />

@@ -219,10 +219,11 @@ Content-Type: application/json
 
 ```env
 # SMTP Configuration
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=465
-SMTP_USER=your-email@gmail.com
-SMTP_PASS=your-app-password
+SMTP_HOST=smtp.sendgrid.net
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=apikey
+SMTP_PASS=[Your SendGrid API Key]
 
 # Authentication
 JWT_SECRET=your-secret-key

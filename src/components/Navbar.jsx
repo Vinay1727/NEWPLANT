@@ -4,7 +4,7 @@ import Notifications from "./Notifications";
 import LogoImg from "../assets/logo2.jpg";
 
 // Use Vite env variable (must be prefixed with VITE_) when building with Vite.
-const API_BASE = "https://newplant-6.onrender.com";
+const API_BASE = "https://newplant-7.onrender.com";
 
 const Navbar = ({ setCurrentPage, setShowCart, cartCount = 0, addToCart }) => {
   const [showLogin, setShowLogin] = useState(false);

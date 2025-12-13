@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
  * Track stock levels, set alerts, manage reorders
  */
 
-const API_BASE = 'https://newplant-6.onrender.com';
+const API_BASE = 'https://newplant-7.onrender.com';
 
 const InventoryManagement = ({ adminToken }) => {
   const [products, setProducts] = useState([]);
@@ -279,8 +279,8 @@ const InventoryManagement = ({ adminToken }) => {
                   <td className="px-6 py-4 text-sm text-gray-600">₹{product.price}</td>
                   <td className="px-6 py-4 text-sm">
                     <span className={`px-3 py-1 rounded-full text-xs font-semibold ${stock === 0 ? 'bg-red-100 text-red-700' :
-                        isLow ? 'bg-yellow-100 text-yellow-700' :
-                          'bg-green-100 text-green-700'
+                      isLow ? 'bg-yellow-100 text-yellow-700' :
+                        'bg-green-100 text-green-700'
                       }`}>
                       {stock === 0 ? 'Out of Stock' : isLow ? 'Low Stock' : 'In Stock'}
                     </span>

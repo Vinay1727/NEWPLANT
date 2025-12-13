@@ -1,6 +1,6 @@
 import React from "react";
 
-const API_BASE = 'https://newplant-6.onrender.com';
+const API_BASE = 'https://newplant-7.onrender.com';
 
 const Contact = () => {
   const [formData, setFormData] = React.useState({

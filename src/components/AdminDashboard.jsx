@@ -3,7 +3,7 @@ import AnalyticsDashboard from './AnalyticsDashboard';
 import InventoryManagement from './InventoryManagement';
 import MarketingManagement from './MarketingManagement';
 
-const API_BASE = 'https://newplant-6.onrender.com';
+const API_BASE = 'https://newplant-7.onrender.com';
 
 const AdminDashboard = ({ setCurrentPage }) => {
   const [orders, setOrders] = React.useState([]);
@@ -256,8 +256,8 @@ const AdminDashboard = ({ setCurrentPage }) => {
                 key={section.id}
                 onClick={() => setActiveSection(section.id)}
                 className={`px-6 py-3 font-medium transition-all border-b-2 whitespace-nowrap ${activeSection === section.id
-                    ? 'border-green-500 text-green-400'
-                    : 'border-transparent text-gray-400 hover:text-gray-300'
+                  ? 'border-green-500 text-green-400'
+                  : 'border-transparent text-gray-400 hover:text-gray-300'
                   }`}
               >
                 {section.label}

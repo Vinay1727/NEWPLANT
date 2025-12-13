@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { formatINRFromUSD } from "../utils/priceUtils";
 import Product from "./Product";
 
-const API_BASE = "https://newplant-6.onrender.com";
+const API_BASE = "https://newplant-7.onrender.com";
 
 const IndorePlants = ({ addToCart, setCurrentPage }) => {
   const [plants, setPlants] = useState([]);
@@ -129,8 +129,8 @@ const IndorePlants = ({ addToCart, setCurrentPage }) => {
                           key={i}
                           onClick={() => goToSlide(i)}
                           className={`h-3 rounded-full transition-all duration-200 ${i === currentSlideIndex
-                              ? 'bg-green-400 w-8'
-                              : 'bg-gray-500 w-3 hover:bg-green-300'
+                            ? 'bg-green-400 w-8'
+                            : 'bg-gray-500 w-3 hover:bg-green-300'
                             }`}
                           aria-label={`Go to image ${i + 1}`}
                         />
@@ -145,8 +145,8 @@ const IndorePlants = ({ addToCart, setCurrentPage }) => {
                             key={plant._id}
                             onClick={() => goToSlide(i)}
                             className={`flex-shrink-0 w-16 h-16 rounded-lg border-2 overflow-hidden transition-all duration-200 ${i === currentSlideIndex
-                                ? 'border-green-400 ring-2 ring-green-400'
-                                : 'border-gray-600 hover:border-green-500'
+                              ? 'border-green-400 ring-2 ring-green-400'
+                              : 'border-gray-600 hover:border-green-500'
                               }`}
                           >
                             {plant.imageUrl ? (

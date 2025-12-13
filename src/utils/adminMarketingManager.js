@@ -3,7 +3,7 @@
  * Create, manage, and track promotional codes
  */
 
-const API_BASE = 'https://newplant-6.onrender.com';
+const API_BASE = 'https://newplant-7.onrender.com';
 
 export const discountManager = {
   // Get all discount codes

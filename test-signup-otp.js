@@ -1,11 +1,11 @@
 // Test the signup OTP flow
-const API_BASE = 'https://newplant-4.onrender.com';
+const API_BASE = 'https://newplant-7.onrender.com';
 
 async function testSignupOtpFlow() {
   const testEmail = `test-${Date.now()}@example.com`;
   const testName = 'Test User';
   const testPassword = 'TestPassword123!';
-  
+
   console.log('🔍 Testing signup OTP flow...\n');
   console.log(`Email: ${testEmail}`);
   console.log(`Name: ${testName}`);
@@ -19,23 +19,23 @@ async function testSignupOtpFlow() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: testEmail })
     });
-    
+
     const otpData = await otpRes.json();
     console.log(`Status: ${otpRes.status}`);
     console.log(`Response:`, otpData);
-    
+
     if (!otpRes.ok) {
       console.log('❌ Failed to request OTP');
       return;
     }
-    
+
     console.log('✅ OTP request successful!\n');
 
     // Step 2: Verify OTP (using hardcoded OTP for testing - in real flow user enters it from email)
     console.log('📝 Step 2: Verifying OTP...');
     console.log('⚠️  Note: In production, user enters OTP from email');
     console.log('💡 For testing, check server logs for generated OTP and enter it here manually\n');
-    
+
     // Extract OTP from server logs - for now just log what we need to do
     console.log('📋 Next steps:');
     console.log('1. Check the server console for the OTP that was generated');

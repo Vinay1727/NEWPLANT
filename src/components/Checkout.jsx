@@ -2,7 +2,7 @@ import React from 'react';
 import { toINR, formatINR } from '../utils/priceUtils';
 import { generateInvoicePDF } from '../utils/invoiceUtils';
 
-const API_BASE = 'https://newplant-6.onrender.com';
+const API_BASE = 'https://newplant-7.onrender.com';
 
 const Checkout = ({ cartItems = [], setCurrentPage, setPaymentOrderId, removeItem }) => {
   const [formData, setFormData] = React.useState({
