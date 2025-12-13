@@ -6,7 +6,7 @@ const SearchModal = ({ showSearch, setShowSearch, setCurrentPage, addToCart }) =
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const API_BASE = "https://newplant-7.onrender.com";
+  const API_BASE = "https://newplant-8.onrender.com";
 
   useEffect(() => {
     if (!searchTerm.trim()) {

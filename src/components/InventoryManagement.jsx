@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
  * Track stock levels, set alerts, manage reorders
  */
 
-const API_BASE = 'https://newplant-7.onrender.com';
+const API_BASE = 'https://newplant-8.onrender.com';
 
 const InventoryManagement = ({ adminToken }) => {
   const [products, setProducts] = useState([]);

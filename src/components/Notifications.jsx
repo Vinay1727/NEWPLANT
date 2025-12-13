@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-const API_BASE = "https://newplant-7.onrender.com";
+const API_BASE = "https://newplant-8.onrender.com";
 
 const Notifications = ({ onClose }) => {
   const [notifications, setNotifications] = useState([]);

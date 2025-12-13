@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Product from "./Product";
 import { formatINRFromUSD } from "../utils/priceUtils";
 
-const API_BASE = "https://newplant-7.onrender.com";
+const API_BASE = "https://newplant-8.onrender.com";
 
 const OutdoorPlants = ({ addToCart }) => {
   const [plants, setPlants] = useState([]);

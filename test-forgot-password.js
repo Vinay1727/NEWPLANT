@@ -1,5 +1,5 @@
 // Test forgot password OTP flow
-const API_BASE = 'https://newplant-7.onrender.com';
+const API_BASE = 'https://newplant-8.onrender.com';
 
 async function testForgotPasswordOtpFlow() {
   console.log('🔍 Testing Forgot Password OTP flow...\n');
