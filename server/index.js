@@ -15,47 +15,48 @@ const Message = require('./models/Message');
 const Plant = require('./models/Plant');
 const Review = require('./models/Review');
 const Otp = require('./models/Otp');
+const Notification = require('./models/Notification');
 const { syncCSVToDatabase, resyncCSV, watchCSVFile, stopWatchingCSVFile, CSV_PATHS } = require('./utils/csvSync');
 const { getStatusEmailHTML } = require('./utils/emailTemplates');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-  // Mail transporter (initialized synchronously for immediate use)
-  let transporter = null;
-  const SMTP_FROM = process.env.SMTP_FROM || process.env.SMTP_USER || 'no-reply@jeevaleaf.com';
+// Mail transporter (initialized synchronously for immediate use)
+let transporter = null;
+const SMTP_FROM = process.env.SMTP_FROM || process.env.SMTP_USER || 'no-reply@jeevaleaf.com';
 
-  // Explicitly log SMTP-related env values for debugging (password is NOT logged)
-  try {
-    console.log('SMTP environment (raw):', {
-      SMTP_HOST: process.env.SMTP_HOST || null,
-      SMTP_PORT: process.env.SMTP_PORT || null,
-      SMTP_SECURE_RAW: process.env.SMTP_SECURE || null,
-      SMTP_USER: process.env.SMTP_USER || null,
-      SMTP_PASS_SET: !!process.env.SMTP_PASS
-    });
-  } catch (e) {
-    console.warn('Could not read SMTP env for logging:', e && e.message);
-  }
+// Explicitly log SMTP-related env values for debugging (password is NOT logged)
+try {
+  console.log('SMTP environment (raw):', {
+    SMTP_HOST: process.env.SMTP_HOST || null,
+    SMTP_PORT: process.env.SMTP_PORT || null,
+    SMTP_SECURE_RAW: process.env.SMTP_SECURE || null,
+    SMTP_USER: process.env.SMTP_USER || null,
+    SMTP_PASS_SET: !!process.env.SMTP_PASS
+  });
+} catch (e) {
+  console.warn('Could not read SMTP env for logging:', e && e.message);
+}
 
-  if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
-    const smtpPort = Number(process.env.SMTP_PORT) || 587;
-    // Resolve secure flag: port 465 implies secure, otherwise honor explicit env value if set to 'true'
-    const isSecure = smtpPort === 465 || String(process.env.SMTP_SECURE).toLowerCase() === 'true';
+if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
+  const smtpPort = Number(process.env.SMTP_PORT) || 587;
+  // Resolve secure flag: port 465 implies secure, otherwise honor explicit env value if set to 'true'
+  const isSecure = smtpPort === 465 || String(process.env.SMTP_SECURE).toLowerCase() === 'true';
 
-    transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: smtpPort,
-      secure: isSecure,
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS
-      }
-    });
-    console.log(`✅ Mail transporter initialized - Host: ${process.env.SMTP_HOST}, Port: ${smtpPort}, Secure: ${isSecure}`);
-  } else {
-    console.warn('⚠️ SMTP not configured - no emails will be sent');
-  }
+  transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: smtpPort,
+    secure: isSecure,
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS
+    }
+  });
+  console.log(`✅ Mail transporter initialized - Host: ${process.env.SMTP_HOST}, Port: ${smtpPort}, Secure: ${isSecure}`);
+} else {
+  console.warn('⚠️ SMTP not configured - no emails will be sent');
+}
 
 // Generate invoice PDF buffer for an order
 function generateInvoiceBuffer(order) {
@@ -226,7 +227,7 @@ async function start() {
   try {
     if (MONGO_URI) await mongoose.connect(MONGO_URI, { autoIndex: true });
     console.log('Connected to MongoDB (if MONGO_URI provided)');
-    
+
     // Sync CSV data to database on startup for all known categories
     try {
       console.log('Starting CSV to database sync for categories:', Object.keys(CSV_PATHS).join(', '));
@@ -296,7 +297,7 @@ async function start() {
     try {
       const { email } = req.body;
       console.log(`🔄 Password reset requested for email: ${email}`);
-      
+
       if (!email) return res.status(400).json({ success: false, message: 'Email is required' });
 
       const user = await User.findOne({ email: email.toLowerCase() });
@@ -308,7 +309,7 @@ async function start() {
       // Generate OTP
       const otp = generateOTP();
       console.log(`🔐 Generated OTP for ${email}: ${otp}`);
-      
+
       const otpHash = await bcrypt.hash(otp, 10);
       const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
@@ -327,9 +328,9 @@ async function start() {
         console.log(`⚠️ DEBUG: OTP for ${email} is: ${otp}`);
         console.log(`⚠️ For testing only - OTP saved to database but email delivery failed`);
         // In dev mode, still allow continuation
-        return res.json({ 
-          success: true, 
-          message: '⚠️ OTP generated (email delivery failed - check server logs)', 
+        return res.json({
+          success: true,
+          message: '⚠️ OTP generated (email delivery failed - check server logs)',
           email,
           debugOtp: process.env.NODE_ENV !== 'production' ? otp : undefined
         });
@@ -385,7 +386,7 @@ async function start() {
     try {
       const { email } = req.body;
       console.log(`🔄 OTP requested for signup - Email: ${email}`);
-      
+
       if (!email) return res.status(400).json({ success: false, message: 'Email is required' });
 
       // Check if email already exists
@@ -398,7 +399,7 @@ async function start() {
       // Generate OTP
       const otp = generateOTP();
       console.log(`🔐 Generated OTP for signup ${email}: ${otp}`);
-      
+
       const otpHash = await bcrypt.hash(otp, 10);
       const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
@@ -412,16 +413,16 @@ async function start() {
 
       // Send OTP via email
       const sent = await sendOtpEmail(email, otp);
-      
+
       // For development: if email fails but OTP is saved, still proceed and log the OTP
       if (!sent) {
         console.log(`⚠️ WARNING: Email send failed for ${email}`);
         console.log(`⚠️ DEBUG: OTP for ${email} is: ${otp}`);
         console.log(`⚠️ For testing only - OTP saved to database but email delivery failed`);
         // In dev mode, still allow continuation - user can manually use the OTP shown in logs
-        return res.json({ 
-          success: true, 
-          message: '⚠️ OTP generated (email delivery failed - check server logs)', 
+        return res.json({
+          success: true,
+          message: '⚠️ OTP generated (email delivery failed - check server logs)',
           email,
           debugOtp: process.env.NODE_ENV !== 'production' ? otp : undefined
         });
@@ -802,6 +803,60 @@ async function start() {
     }
   });
 
+  // Get User Notifications
+  app.get('/api/notifications', async (req, res) => {
+    try {
+      const auth = req.headers.authorization;
+      if (!auth) return res.status(401).json({ success: false, message: 'Missing token' });
+      const token = auth.split(' ')[1];
+      const data = jwt.verify(token, JWT_SECRET);
+
+      const notifications = await Notification.find({ user: data.id }).sort({ createdAt: -1 }).limit(50);
+      const unreadCount = await Notification.countDocuments({ user: data.id, read: false });
+
+      return res.json({ success: true, notifications, unreadCount });
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ success: false, message: 'Server error' });
+    }
+  });
+
+  // Mark all notifications as read
+  app.put('/api/notifications/read-all', async (req, res) => {
+    try {
+      const auth = req.headers.authorization;
+      if (!auth) return res.status(401).json({ success: false, message: 'Missing token' });
+      const token = auth.split(' ')[1];
+      const data = jwt.verify(token, JWT_SECRET);
+
+      await Notification.updateMany({ user: data.id, read: false }, { read: true });
+      return res.json({ success: true, message: 'All marked as read' });
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ success: false, message: 'Server error' });
+    }
+  });
+
+  // Mark single notification as read
+  app.put('/api/notifications/:id/read', async (req, res) => {
+    try {
+      const auth = req.headers.authorization;
+      if (!auth) return res.status(401).json({ success: false, message: 'Missing token' });
+      const token = auth.split(' ')[1];
+      const data = jwt.verify(token, JWT_SECRET);
+
+      const notif = await Notification.findOne({ _id: req.params.id, user: data.id });
+      if (!notif) return res.status(404).json({ success: false, message: 'Notification not found' });
+
+      notif.read = true;
+      await notif.save();
+      return res.json({ success: true, notification: notif });
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ success: false, message: 'Server error' });
+    }
+  });
+
   // Submit a review for an order (protected) - only allowed when order.status === 'delivered' and owner
   app.post('/api/orders/:id/review', async (req, res) => {
     try {
@@ -895,7 +950,7 @@ async function start() {
     try {
       const { category } = req.params;
       const validCategories = ['indoor', 'flowering', 'outdoor', 'planters', 'care-kits'];
-      
+
       if (!validCategories.includes(category)) {
         return res.status(400).json({ success: false, message: 'Invalid category' });
       }
@@ -1051,11 +1106,34 @@ async function start() {
       const { status, paymentStatus } = req.body;
       const order = await Order.findById(req.params.id);
       if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
-      
+
       const oldStatus = order.status;
       if (status) order.status = status;
       if (paymentStatus) order.paymentStatus = paymentStatus;
       await order.save();
+
+      // Create notification for the user
+      if (status && status !== oldStatus) {
+        try {
+          const notifTitle = `Order ${status.charAt(0).toUpperCase() + status.slice(1)}`;
+          const notifMsg = `Your order #${order._id.toString().slice(-6)} has been ${status}.`;
+          let type = 'info';
+          if (status === 'delivered') type = 'success';
+          if (status === 'cancelled' || status === 'returned') type = 'error';
+          if (status === 'shipped') type = 'info';
+
+          await Notification.create({
+            user: order.user,
+            title: notifTitle,
+            message: notifMsg,
+            type,
+            data: { orderId: order._id }
+          });
+          console.log(`🔔 Notification created for User ${order.user}: ${notifTitle}`);
+        } catch (nErr) {
+          console.error('Failed to create notification', nErr);
+        }
+      }
 
       // Send status update email to customer
       if (status && status !== oldStatus && transporter && order.deliveryEmail) {
@@ -1148,7 +1226,7 @@ async function start() {
   app.post('/api/admin/plants', requireAdmin, async (req, res) => {
     try {
       const { name, category, salePrice, oldPrice, description, imageUrl } = req.body;
-      
+
       if (!name || !category || !salePrice) {
         return res.status(400).json({ success: false, message: 'Missing required fields' });
       }
@@ -1162,7 +1240,7 @@ async function start() {
         imageUrl,
         syncedFrom: 'manual'
       });
-      
+
       await plant.save();
       return res.json({ success: true, message: 'Plant added', plant });
     } catch (err) {
@@ -1176,7 +1254,7 @@ async function start() {
     try {
       const { name, category, salePrice, oldPrice, description, imageUrl } = req.body;
       const plant = await Plant.findById(req.params.id);
-      
+
       if (!plant) return res.status(404).json({ success: false, message: 'Plant not found' });
 
       // Only allow updating manual plants, not CSV synced ones
@@ -1203,7 +1281,7 @@ async function start() {
   app.post('/api/admin/plants/:id/delete', requireAdmin, async (req, res) => {
     try {
       const plant = await Plant.findById(req.params.id);
-      
+
       if (!plant) return res.status(404).json({ success: false, message: 'Plant not found' });
 
       // Only allow deleting manual plants, not CSV synced ones

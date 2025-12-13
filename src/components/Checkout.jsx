@@ -69,6 +69,17 @@ const Checkout = ({ cartItems = [], setCurrentPage, setPaymentOrderId, removeIte
       });
 
       const data = await resp.json();
+
+      // Handle session expiry / invalid token explicitly
+      if (!data.success && (data.message === 'Invalid token' || data.message === 'Missing token' || resp.status === 401)) {
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('auth_user');
+        window.dispatchEvent(new Event('storage')); // trigger Navbar update
+        window.dispatchEvent(new Event('open-login')); // open login modal
+        alert('Session expired or invalid. Please login again to place order.');
+        return;
+      }
+
       if (!data.success) {
         alert(data.message || 'Order failed');
         return;
@@ -92,6 +103,40 @@ const Checkout = ({ cartItems = [], setCurrentPage, setPaymentOrderId, removeIte
     }
   };
 
+  if (confirmedOrder) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-[#0a1a12] to-[#051108] p-4 flex items-center justify-center">
+        <div className="max-w-2xl w-full bg-[#07110a] p-8 rounded-lg border border-green-600 shadow-2xl text-center">
+          <div className="text-6xl mb-4">✅</div>
+          <h2 className="text-3xl font-bold text-green-400 mb-2">Order Places Successfully!</h2>
+          <p className="text-gray-300 mb-6">Thank you for your purchase. Your order has been confirmed.</p>
+
+          <div className="bg-green-900/20 p-4 rounded border border-green-800 mb-8 inline-block text-left">
+            <p className="text-sm text-gray-400">Order ID:</p>
+            <p className="text-lg font-mono text-white mb-2">{confirmedOrder._id}</p>
+            <p className="text-sm text-gray-400">Total Amount:</p>
+            <p className="text-lg font-bold text-green-300">₹{confirmedOrder.total}</p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <button
+              onClick={() => generateInvoicePDF(confirmedOrder)}
+              className="px-6 py-3 bg-green-600 hover:bg-green-500 text-white font-bold rounded-lg transition flex items-center justify-center gap-2"
+            >
+              📄 Download Invoice
+            </button>
+            <button
+              onClick={() => { setConfirmedOrder(null); setCurrentPage?.('home'); }}
+              className="px-6 py-3 border border-green-500 text-green-400 hover:bg-green-900/30 font-bold rounded-lg transition"
+            >
+              Continue Shopping
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0a1a12] to-[#051108] p-4">
       <div className="max-w-4xl mx-auto">
@@ -103,20 +148,6 @@ const Checkout = ({ cartItems = [], setCurrentPage, setPaymentOrderId, removeIte
         </button>
 
         <div className="grid md:grid-cols-2 gap-6">
-          {confirmedOrder && (
-            <div className="col-span-full mb-6">
-              <div className="bg-green-900/10 p-4 rounded border border-green-700 flex items-center justify-between">
-                <div>
-                  <div className="text-green-300 font-bold">Order Confirmed</div>
-                  <div className="text-sm text-gray-400">Order ID: {confirmedOrder._id}</div>
-                </div>
-                <div className="flex gap-2">
-                  <button onClick={() => generateInvoicePDF(confirmedOrder)} className="px-3 py-2 bg-green-600 rounded text-white">⬇️ Download Invoice</button>
-                  <button onClick={() => { setConfirmedOrder(null); setCurrentPage?.('home'); }} className="px-3 py-2 border border-green-700 rounded text-white">Continue Shopping</button>
-                </div>
-              </div>
-            </div>
-          )}
           {/* Delivery Details Form */}
           <div className="bg-[#07110a] p-6 rounded-lg border border-green-700">
             <h2 className="text-2xl font-bold text-green-300 mb-4">Delivery Details</h2>
@@ -188,11 +219,10 @@ const Checkout = ({ cartItems = [], setCurrentPage, setPaymentOrderId, removeIte
                       key={method}
                       type="button"
                       onClick={() => setSelectedPayment(method)}
-                      className={`px-3 py-2 rounded text-sm font-semibold transition ${
-                        selectedPayment === method
-                          ? 'bg-green-700 text-white border-green-400'
-                          : 'bg-transparent border border-green-700 text-gray-300 hover:text-white'
-                      }`}
+                      className={`px-3 py-2 rounded text-sm font-semibold transition ${selectedPayment === method
+                        ? 'bg-green-700 text-white border-green-400'
+                        : 'bg-transparent border border-green-700 text-gray-300 hover:text-white'
+                        }`}
                     >
                       {method.toUpperCase()}
                     </button>
