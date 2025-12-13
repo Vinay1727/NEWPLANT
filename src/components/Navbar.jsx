@@ -9,6 +9,7 @@ const API_BASE = "https://newplant-9.onrender.com";
 const Navbar = ({ setCurrentPage, setShowCart, cartCount = 0, addToCart }) => {
   const [showLogin, setShowLogin] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
+  const [showSignupOtp, setShowSignupOtp] = useState(false);
   const [showForgot, setShowForgot] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [email, setEmail] = useState("");
@@ -414,71 +415,125 @@ const Navbar = ({ setCurrentPage, setShowCart, cartCount = 0, addToCart }) => {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-[#071018] border-2 border-green-600 rounded-3xl p-8 w-full max-w-md shadow-2xl">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-3xl font-bold text-green-400">🌱 Sign Up</h2>
-              <button onClick={() => setShowSignup(false)} className="text-3xl text-gray-400 hover:text-white">
+              <h2 className="text-3xl font-bold text-green-400">🌱 {showSignupOtp ? 'Verify OTP' : 'Sign Up'}</h2>
+              <button onClick={() => { setShowSignup(false); setShowSignupOtp(false); }} className="text-3xl text-gray-400 hover:text-white">
                 ✕
               </button>
             </div>
 
             <div className="space-y-4">
-              <input
-                type="text"
-                placeholder="Enter your name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full px-4 py-3 bg-[#0b2a1a] border border-green-700 rounded-lg text-white outline-none focus:border-green-400 transition"
-              />
+              {!showSignupOtp ? (
+                <>
+                  <input
+                    type="text"
+                    placeholder="Enter your name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full px-4 py-3 bg-[#0b2a1a] border border-green-700 rounded-lg text-white outline-none focus:border-green-400 transition"
+                  />
 
-              <input
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 bg-[#0b2a1a] border border-green-700 rounded-lg text-white outline-none focus:border-green-400 transition"
-              />
+                  <input
+                    type="email"
+                    placeholder="Enter your email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full px-4 py-3 bg-[#0b2a1a] border border-green-700 rounded-lg text-white outline-none focus:border-green-400 transition"
+                  />
 
-              <input
-                type="password"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 bg-[#0b2a1a] border border-green-700 rounded-lg text-white outline-none focus:border-green-400 transition"
-              />
+                  <input
+                    type="password"
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full px-4 py-3 bg-[#0b2a1a] border border-green-700 rounded-lg text-white outline-none focus:border-green-400 transition"
+                  />
 
-              <button onClick={async () => {
-                if (!name || !email || !password) { alert('All fields are required'); return; }
-                if (!/^\S+@\S+\.\S+$/.test(email)) { alert('Enter a valid email'); return; }
+                  <button onClick={async () => {
+                    if (!name || !email || !password) { alert('All fields are required'); return; }
+                    if (!/^\S+@\S+\.\S+$/.test(email)) { alert('Enter a valid email'); return; }
 
-                try {
-                  const resp = await fetch(`${API_BASE}/api/signup`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, email: email.toLowerCase(), password })
-                  });
-                  const data = await resp.json();
-                  if (!resp.ok) {
-                    alert(data.message || 'Signup failed');
-                    return;
-                  }
+                    try {
+                      const resp = await fetch(`${API_BASE}/api/signup`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name, email: email.toLowerCase(), password })
+                      });
+                      const data = await resp.json();
 
-                  // Success: login the user
-                  localStorage.setItem('auth_token', data.token);
-                  localStorage.setItem('auth_user', JSON.stringify(data.user));
-                  setUser(data.user);
-                  setShowSignup(false);
-                  setName(''); setEmail(''); setPassword('');
-                  alert('Account created successfully!');
-                } catch (err) {
-                  console.error('Signup error', err);
-                  alert('Network error while creating account');
-                }
-              }} className="w-full py-3 bg-green-600 hover:bg-green-500 text-white font-bold rounded-lg transition transform hover:scale-105">
-                ✓ Create Account
-              </button>
+                      if (data.requiresOtp) {
+                        alert(data.message); // "OTP sent! check spam..."
+                        setShowSignupOtp(true);
+                        return;
+                      }
 
-              <div className="flex gap-2">
-                <button onClick={() => { setShowSignup(false); setShowLogin(true); }} className="w-full py-3 bg-gray-700 text-white rounded-lg">Already have an account? Login</button>
-              </div>
+                      if (!resp.ok) {
+                        alert(data.message || 'Signup failed');
+                        return;
+                      }
+
+                      // Fallback for direct success if backend ever reverts
+                      localStorage.setItem('auth_token', data.token);
+                      localStorage.setItem('auth_user', JSON.stringify(data.user));
+                      setUser(data.user);
+                      setShowSignup(false);
+                      setName(''); setEmail(''); setPassword('');
+                      alert('Account created successfully!');
+                    } catch (err) {
+                      console.error('Signup error', err);
+                      alert('Network error while creating account');
+                    }
+                  }} className="w-full py-3 bg-green-600 hover:bg-green-500 text-white font-bold rounded-lg transition transform hover:scale-105">
+                    ✓ Create Account
+                  </button>
+
+                  <div className="flex gap-2">
+                    <button onClick={() => { setShowSignup(false); setShowLogin(true); }} className="w-full py-3 bg-gray-700 text-white rounded-lg">Already have an account? Login</button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p className="text-gray-300 text-sm mb-2">We sent a code to <strong>{email}</strong>. Check your SPAM folder too.</p>
+                  <input
+                    type="text"
+                    placeholder="Enter 6-digit OTP"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value)}
+                    className="w-full px-4 py-3 bg-[#0b2a1a] border border-green-700 rounded-lg text-white outline-none focus:border-green-400 transition text-center letter-spacing-4 text-xl"
+                    maxLength={6}
+                  />
+
+                  <button onClick={async () => {
+                    if (!otp) return alert('Please enter OTP');
+                    try {
+                      const resp = await fetch(`${API_BASE}/api/verify-otp-signup`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, otp, name, password })
+                      });
+                      const data = await resp.json();
+                      if (!data.success) return alert(data.message || 'Verification failed');
+
+                      // Success!
+                      localStorage.setItem('auth_token', data.token);
+                      localStorage.setItem('auth_user', JSON.stringify(data.user));
+                      setUser(data.user);
+                      setShowSignup(false);
+                      setShowSignupOtp(false); // reset
+                      setName(''); setEmail(''); setPassword(''); setOtp('');
+                      alert('Account verified & created successfully! Welcome to JeavaLeaf.');
+                    } catch (err) {
+                      console.error('OTP Verify Error', err);
+                      alert('Verification network error');
+                    }
+                  }} className="w-full py-3 bg-green-600 hover:bg-green-500 text-white font-bold rounded-lg transition transform hover:scale-105">
+                    ✨ Verify & Login
+                  </button>
+
+                  <button onClick={() => setShowSignupOtp(false)} className="w-full py-2 text-gray-400 hover:text-white text-sm">
+                    Back to Signup
+                  </button>
+                </>
+              )}
 
             </div>
           </div>
