@@ -4,7 +4,7 @@ import Notifications from "./Notifications";
 import LogoImg from "../assets/logo2.jpg";
 
 // Use Vite env variable (must be prefixed with VITE_) when building with Vite.
-const API_BASE = "https://newplant-8.onrender.com";
+const API_BASE = "https://newplant-9.onrender.com";
 
 const Navbar = ({ setCurrentPage, setShowCart, cartCount = 0, addToCart }) => {
   const [showLogin, setShowLogin] = useState(false);
@@ -345,7 +345,7 @@ const Navbar = ({ setCurrentPage, setShowCart, cartCount = 0, addToCart }) => {
                   setEmail(''); setPassword('');
                 } catch (err) {
                   console.error(err);
-                  alert('Login error');
+                  alert('Login error: ' + (err.message || String(err)));
                 }
               }} className="w-full py-3 bg-green-600 hover:bg-green-500 text-white font-bold rounded-lg transition transform hover:scale-105">
                 🔓 Login

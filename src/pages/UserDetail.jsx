@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
-const API_BASE = 'https://newplant-8.onrender.com';
+const API_BASE = 'https://newplant-9.onrender.com';
 
 export default function UserDetail() {
   const { userId } = useParams();

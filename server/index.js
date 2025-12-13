@@ -679,88 +679,88 @@ async function start() {
       });
       await order.save();
 
-      // Send order confirmation email
+      // Send order confirmation email (Awaited to ensure execution on Render)
       if (transporter && order.deliveryEmail) {
-        console.log(`📧 Sending order confirmation email to ${order.deliveryEmail}`);
-        setImmediate(async () => {
-          try {
-            const itemsHtml = order.items?.map(it => `
-              <tr>
-                <td style="padding: 12px; border-bottom: 1px solid #ddd;">${it.name || 'Item'}</td>
-                <td style="padding: 12px; border-bottom: 1px solid #ddd; text-align: center;">${it.quantity || 1}</td>
-                <td style="padding: 12px; border-bottom: 1px solid #ddd; text-align: right;">₹${(Number(it.price) || 0).toFixed(2)}</td>
-                <td style="padding: 12px; border-bottom: 1px solid #ddd; text-align: right;">₹${((Number(it.price) || 0) * (it.quantity || 1)).toFixed(2)}</td>
-              </tr>
-            `).join('') || '';
+        console.log(`MAIL FUNCTION CALLED for ${order.deliveryEmail}`);
+        try {
+          const itemsHtml = order.items?.map(it => `
+            <tr>
+              <td style="padding: 12px; border-bottom: 1px solid #ddd;">${it.name || 'Item'}</td>
+              <td style="padding: 12px; border-bottom: 1px solid #ddd; text-align: center;">${it.quantity || 1}</td>
+              <td style="padding: 12px; border-bottom: 1px solid #ddd; text-align: right;">₹${(Number(it.price) || 0).toFixed(2)}</td>
+              <td style="padding: 12px; border-bottom: 1px solid #ddd; text-align: right;">₹${((Number(it.price) || 0) * (it.quantity || 1)).toFixed(2)}</td>
+            </tr>
+          `).join('') || '';
 
-            const confirmationHtml = `
-              <html>
-                <body style="font-family: Arial, sans-serif; background-color: #f5f5f5; margin: 0; padding: 20px;">
-                  <div style="max-width: 700px; margin: 0 auto; background-color: white; border: 1px solid #4CAF50; border-radius: 8px;">
-                    <div style="background: linear-gradient(135deg, #071018 0%, #0b2a1a 100%); color: white; padding: 40px; text-align: center;">
-                      <h1 style="color: #FFD700; margin: 0 0 10px 0; font-size: 36px;">jeevaLeaf</h1>
-                      <p style="color: #4CAF50; margin: 5px 0; font-size: 16px;">Bring life in our home 🌿</p>
-                      <h2 style="color: #4CAF50; margin: 20px 0 0 0; font-size: 20px;">✅ ORDER CONFIRMED</h2>
-                    </div>
-                    <div style="padding: 40px;">
-                      <p style="font-size: 16px; color: #333; margin-bottom: 20px;">
-                        <strong>Dear ${order.deliveryName || 'Valued Customer'},</strong><br/>
-                        Thank you for your order! We've received it and will process it soon.
-                      </p>
-                      <div style="background: #f9f9f9; border-left: 4px solid #FFD700; padding: 20px; margin-bottom: 30px; border-radius: 4px;">
-                        <p style="margin: 8px 0;"><strong>Order ID:</strong> ${order._id}</p>
-                        <p style="margin: 8px 0;"><strong>Order Date:</strong> ${new Date(order.createdAt).toLocaleDateString()}</p>
-                        <p style="margin: 8px 0;"><strong>Status:</strong> <span style="background: #4CAF50; color: white; padding: 4px 12px; border-radius: 4px;">${(order.status || 'PENDING').toUpperCase()}</span></p>
-                      </div>
-                      <h3 style="color: #4CAF50; border-bottom: 2px solid #4CAF50; padding-bottom: 10px; margin-bottom: 15px;">📍 DELIVERY DETAILS</h3>
-                      <p style="color: #333; margin: 8px 0;"><strong>Name:</strong> ${order.deliveryName || 'N/A'}</p>
-                      <p style="color: #333; margin: 8px 0;"><strong>Phone:</strong> ${order.deliveryPhone || 'N/A'}</p>
-                      <p style="color: #333; margin: 8px 0;"><strong>Address:</strong> ${order.deliveryAddress || 'N/A'}</p>
-                      <p style="color: #333; margin: 8px 0;"><strong>City:</strong> ${order.deliveryLocation || 'N/A'}</p>
-                      <h3 style="color: #4CAF50; border-bottom: 2px solid #4CAF50; padding-bottom: 10px; margin: 30px 0 15px 0;">📦 ORDER ITEMS</h3>
-                      <table style="width: 100%; border-collapse: collapse;">
-                        <thead>
-                          <tr style="background: #f0f0f0;">
-                            <th style="padding: 12px; text-align: left; border-bottom: 2px solid #4CAF50;">Product</th>
-                            <th style="padding: 12px; text-align: center; border-bottom: 2px solid #4CAF50;">Qty</th>
-                            <th style="padding: 12px; text-align: right; border-bottom: 2px solid #4CAF50;">Price</th>
-                            <th style="padding: 12px; text-align: right; border-bottom: 2px solid #4CAF50;">Total</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          ${itemsHtml}
-                        </tbody>
-                      </table>
-                      <div style="background: #f9f9f9; padding: 20px; margin-top: 20px; border-radius: 4px;">
-                        <p style="margin: 8px 0; text-align: right;"><strong>Subtotal:</strong> ₹${order.subtotal.toFixed(2)}</p>
-                        <p style="margin: 8px 0; text-align: right;"><strong>Tax (10%):</strong> ₹${order.tax.toFixed(2)}</p>
-                        <p style="margin: 8px 0; text-align: right;"><strong>Shipping:</strong> ₹${order.shipping.toFixed(2)}</p>
-                        <p style="margin: 15px 0 0 0; text-align: right; font-size: 18px; color: #4CAF50;"><strong>Total: ₹${order.total.toFixed(2)}</strong></p>
-                      </div>
-                      <p style="color: #666; font-size: 14px; margin-top: 30px;">We'll send you updates on your order status. Track your package anytime!</p>
-                    </div>
-                    <div style="background: #f5f5f5; border-top: 1px solid #ddd; padding: 20px; text-align: center; color: #666; font-size: 12px;">
-                      <p style="margin: 5px 0;">Thank you for shopping with jeevaLeaf 🌿</p>
-                      <p style="margin: 5px 0;">For support: <strong>support@jeevaleaf.com</strong></p>
-                    </div>
+          const confirmationHtml = `
+            <html>
+              <body style="font-family: Arial, sans-serif; background-color: #f5f5f5; margin: 0; padding: 20px;">
+                <div style="max-width: 700px; margin: 0 auto; background-color: white; border: 1px solid #4CAF50; border-radius: 8px;">
+                  <div style="background: linear-gradient(135deg, #071018 0%, #0b2a1a 100%); color: white; padding: 40px; text-align: center;">
+                    <h1 style="color: #FFD700; margin: 0 0 10px 0; font-size: 36px;">jeevaLeaf</h1>
+                    <p style="color: #4CAF50; margin: 5px 0; font-size: 16px;">Bring life in our home 🌿</p>
+                    <h2 style="color: #4CAF50; margin: 20px 0 0 0; font-size: 20px;">✅ ORDER CONFIRMED</h2>
                   </div>
-                </body>
-              </html>
-            `;
+                  <div style="padding: 40px;">
+                    <p style="font-size: 16px; color: #333; margin-bottom: 20px;">
+                      <strong>Dear ${order.deliveryName || 'Valued Customer'},</strong><br/>
+                      Thank you for your order! We've received it and will process it soon.
+                    </p>
+                    <div style="background: #f9f9f9; border-left: 4px solid #FFD700; padding: 20px; margin-bottom: 30px; border-radius: 4px;">
+                      <p style="margin: 8px 0;"><strong>Order ID:</strong> ${order._id}</p>
+                      <p style="margin: 8px 0;"><strong>Order Date:</strong> ${new Date(order.createdAt).toLocaleDateString()}</p>
+                      <p style="margin: 8px 0;"><strong>Status:</strong> <span style="background: #4CAF50; color: white; padding: 4px 12px; border-radius: 4px;">${(order.status || 'PENDING').toUpperCase()}</span></p>
+                    </div>
+                    <h3 style="color: #4CAF50; border-bottom: 2px solid #4CAF50; padding-bottom: 10px; margin-bottom: 15px;">📍 DELIVERY DETAILS</h3>
+                    <p style="color: #333; margin: 8px 0;"><strong>Name:</strong> ${order.deliveryName || 'N/A'}</p>
+                    <p style="color: #333; margin: 8px 0;"><strong>Phone:</strong> ${order.deliveryPhone || 'N/A'}</p>
+                    <p style="color: #333; margin: 8px 0;"><strong>Address:</strong> ${order.deliveryAddress || 'N/A'}</p>
+                    <p style="color: #333; margin: 8px 0;"><strong>City:</strong> ${order.deliveryLocation || 'N/A'}</p>
+                    <h3 style="color: #4CAF50; border-bottom: 2px solid #4CAF50; padding-bottom: 10px; margin: 30px 0 15px 0;">📦 ORDER ITEMS</h3>
+                    <table style="width: 100%; border-collapse: collapse;">
+                      <thead>
+                        <tr style="background: #f0f0f0;">
+                          <th style="padding: 12px; text-align: left; border-bottom: 2px solid #4CAF50;">Product</th>
+                          <th style="padding: 12px; text-align: center; border-bottom: 2px solid #4CAF50;">Qty</th>
+                          <th style="padding: 12px; text-align: right; border-bottom: 2px solid #4CAF50;">Price</th>
+                          <th style="padding: 12px; text-align: right; border-bottom: 2px solid #4CAF50;">Total</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        ${itemsHtml}
+                      </tbody>
+                    </table>
+                    <div style="background: #f9f9f9; padding: 20px; margin-top: 20px; border-radius: 4px;">
+                      <p style="margin: 8px 0; text-align: right;"><strong>Subtotal:</strong> ₹${order.subtotal.toFixed(2)}</p>
+                      <p style="margin: 8px 0; text-align: right;"><strong>Tax (10%):</strong> ₹${order.tax.toFixed(2)}</p>
+                      <p style="margin: 8px 0; text-align: right;"><strong>Shipping:</strong> ₹${order.shipping.toFixed(2)}</p>
+                      <p style="margin: 15px 0 0 0; text-align: right; font-size: 18px; color: #4CAF50;"><strong>Total: ₹${order.total.toFixed(2)}</strong></p>
+                    </div>
+                    <p style="color: #666; font-size: 14px; margin-top: 30px;">We'll send you updates on your order status. Track your package anytime!</p>
+                  </div>
+                  <div style="background: #f5f5f5; border-top: 1px solid #ddd; padding: 20px; text-align: center; color: #666; font-size: 12px;">
+                    <p style="margin: 5px 0;">Thank you for shopping with jeevaLeaf 🌿</p>
+                    <p style="margin: 5px 0;">For support: <strong>support@jeevaleaf.com</strong></p>
+                  </div>
+                </div>
+              </body>
+            </html>
+          `;
 
-            const mail = {
-              from: SMTP_FROM,
-              to: order.deliveryEmail,
-              subject: `✅ Order Confirmed - Order #${order._id.toString().slice(-8)}`,
-              html: confirmationHtml
-            };
+          const mail = {
+            from: SMTP_FROM,
+            to: order.deliveryEmail,
+            subject: `✅ Order Confirmed - Order #${order._id.toString().slice(-8)}`,
+            html: confirmationHtml
+          };
 
-            await transporter.sendMail(mail);
-            console.log(`✅ Order confirmation email sent to ${order.deliveryEmail}`);
-          } catch (err) {
-            console.error('❌ Error sending order confirmation email:', err.message);
-          }
-        });
+          // Await the email sending so the process doesn't exit/sleep before completion
+          await transporter.sendMail(mail);
+          console.log(`MAIL SENT SUCCESSFULLY to ${order.deliveryEmail}`);
+        } catch (err) {
+          console.error('❌ Error sending order confirmation email:', err.message);
+          // Do NOT throw error, ensure response is still sent
+        }
       }
 
       return res.json({ success: true, orderId: order._id, order });
@@ -1371,6 +1371,32 @@ async function start() {
     } catch (err) {
       console.error(err);
       return res.status(500).json({ success: false, message: 'Server error' });
+    }
+  });
+
+  // Debug: Direct Email Test Route
+  app.post('/api/test-email', async (req, res) => {
+    try {
+      const { email } = req.body;
+      if (!email) return res.status(400).json({ error: 'Email required' });
+
+      if (!transporter) {
+        return res.status(500).json({ error: 'Transporter not initialized. Check SMTP_ variables.' });
+      }
+
+      console.log(`MAIL FUNCTION CALLED for test email to ${email}`);
+      const info = await transporter.sendMail({
+        from: SMTP_FROM,
+        to: email,
+        subject: '🔍 Debug Test Email From Render',
+        text: 'If you receive this, the email piping is working correctly.'
+      });
+      console.log(`MAIL SENT SUCCESSFULLY for test email to ${email}`);
+
+      res.json({ success: true, message: 'Email passed to SMTP server', info });
+    } catch (err) {
+      console.error('❌ Test email failed:', err);
+      res.status(500).json({ success: false, error: err.message, stack: err.stack });
     }
   });
 
