@@ -1,10 +1,13 @@
 require('dotenv').config();
+const { sendOtpEmail } = require('./mail/sendOtpEmail');
+const { sendOrderEmail } = require('./mail/sendOrderEmail');
+const { sendStatusEmail } = require('./mail/sendStatusEmail');
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const nodemailer = require('nodemailer');
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
 const path = require('path');
@@ -21,42 +24,6 @@ const { getStatusEmailHTML } = require('./utils/emailTemplates');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
-
-// Mail transporter (initialized synchronously for immediate use)
-let transporter = null;
-const SMTP_FROM = process.env.SMTP_FROM || process.env.SMTP_USER || 'no-reply@jeevaleaf.com';
-
-// Explicitly log SMTP-related env values for debugging (password is NOT logged)
-try {
-  console.log('SMTP environment (raw):', {
-    SMTP_HOST: process.env.SMTP_HOST || null,
-    SMTP_PORT: process.env.SMTP_PORT || null,
-    SMTP_SECURE_RAW: process.env.SMTP_SECURE || null,
-    SMTP_USER: process.env.SMTP_USER || null,
-    SMTP_PASS_SET: !!process.env.SMTP_PASS
-  });
-} catch (e) {
-  console.warn('Could not read SMTP env for logging:', e && e.message);
-}
-
-if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
-  const smtpPort = Number(process.env.SMTP_PORT) || 587;
-  // Resolve secure flag: port 465 implies secure, otherwise honor explicit env value if set to 'true'
-  const isSecure = smtpPort === 465 || String(process.env.SMTP_SECURE).toLowerCase() === 'true';
-
-  transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: smtpPort,
-    secure: isSecure,
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS
-    }
-  });
-  console.log(`✅ Mail transporter initialized - Host: ${process.env.SMTP_HOST}, Port: ${smtpPort}, Secure: ${isSecure}`);
-} else {
-  console.warn('⚠️ SMTP not configured - no emails will be sent');
-}
 
 // Generate invoice PDF buffer for an order
 function generateInvoiceBuffer(order) {
@@ -248,48 +215,6 @@ async function start() {
   // Helper: Generate OTP
   function generateOTP() {
     return Math.floor(100000 + Math.random() * 900000).toString();
-  }
-
-  // Helper: Send OTP via email
-  async function sendOtpEmail(email, otp) {
-    if (!transporter) {
-      console.warn('⚠️ Transporter not available, skipping OTP email send');
-      return false;
-    }
-    try {
-      const mail = {
-        from: SMTP_FROM,
-        to: email,
-        subject: '🔐 Your OTP for JeevaLeaf - Password Reset',
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: #f5f5f5; border-radius: 8px;">
-            <div style="background: linear-gradient(135deg, #0b6623 0%, #073d1a 100%); color: white; padding: 20px; border-radius: 8px 8px 0 0; text-align: center;">
-              <h1 style="margin: 0;">JeevaLeaf</h1>
-              <p style="margin: 10px 0 0 0; font-size: 14px;">Bring life into your home 🌿</p>
-            </div>
-            <div style="background: white; padding: 30px; border-radius: 0 0 8px 8px;">
-              <h2 style="color: #0b6623; margin-top: 0;">Password Reset Request</h2>
-              <p style="color: #333; font-size: 16px;">We received a request to reset your password. Here's your OTP:</p>
-              <div style="background: #f0f0f0; padding: 20px; border-radius: 8px; text-align: center; margin: 20px 0;">
-                <h1 style="color: #0b6623; margin: 0; letter-spacing: 5px; font-size: 32px;">${otp}</h1>
-              </div>
-              <p style="color: #666; font-size: 14px; margin: 20px 0;">This OTP is valid for <strong>10 minutes</strong>. Do not share it with anyone.</p>
-              <p style="color: #666; font-size: 14px;">If you didn't request this reset, you can safely ignore this email.</p>
-              <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;" />
-              <p style="color: #999; font-size: 12px; text-align: center;">Questions? Contact us at ${process.env.SUPPORT_EMAIL || 'support@jeevaleaf.com'}</p>
-            </div>
-          </div>
-        `
-      };
-      console.log(`📧 Sending OTP email to ${email}...`);
-      const info = await transporter.sendMail(mail);
-      console.log(`✅ OTP email sent to ${email} - Response ID: ${info.response}`);
-      return true;
-    } catch (err) {
-      console.error('❌ Error sending OTP email to', email, ':', err.message);
-      console.error('Full error:', err);
-      return false;
-    }
   }
 
   // Request Password Reset (sends OTP)
@@ -680,87 +605,12 @@ async function start() {
       await order.save();
 
       // Send order confirmation email (Awaited to ensure execution on Render)
-      if (transporter && order.deliveryEmail) {
-        console.log(`MAIL FUNCTION CALLED for ${order.deliveryEmail}`);
-        try {
-          const itemsHtml = order.items?.map(it => `
-            <tr>
-              <td style="padding: 12px; border-bottom: 1px solid #ddd;">${it.name || 'Item'}</td>
-              <td style="padding: 12px; border-bottom: 1px solid #ddd; text-align: center;">${it.quantity || 1}</td>
-              <td style="padding: 12px; border-bottom: 1px solid #ddd; text-align: right;">₹${(Number(it.price) || 0).toFixed(2)}</td>
-              <td style="padding: 12px; border-bottom: 1px solid #ddd; text-align: right;">₹${((Number(it.price) || 0) * (it.quantity || 1)).toFixed(2)}</td>
-            </tr>
-          `).join('') || '';
-
-          const confirmationHtml = `
-            <html>
-              <body style="font-family: Arial, sans-serif; background-color: #f5f5f5; margin: 0; padding: 20px;">
-                <div style="max-width: 700px; margin: 0 auto; background-color: white; border: 1px solid #4CAF50; border-radius: 8px;">
-                  <div style="background: linear-gradient(135deg, #071018 0%, #0b2a1a 100%); color: white; padding: 40px; text-align: center;">
-                    <h1 style="color: #FFD700; margin: 0 0 10px 0; font-size: 36px;">jeevaLeaf</h1>
-                    <p style="color: #4CAF50; margin: 5px 0; font-size: 16px;">Bring life in our home 🌿</p>
-                    <h2 style="color: #4CAF50; margin: 20px 0 0 0; font-size: 20px;">✅ ORDER CONFIRMED</h2>
-                  </div>
-                  <div style="padding: 40px;">
-                    <p style="font-size: 16px; color: #333; margin-bottom: 20px;">
-                      <strong>Dear ${order.deliveryName || 'Valued Customer'},</strong><br/>
-                      Thank you for your order! We've received it and will process it soon.
-                    </p>
-                    <div style="background: #f9f9f9; border-left: 4px solid #FFD700; padding: 20px; margin-bottom: 30px; border-radius: 4px;">
-                      <p style="margin: 8px 0;"><strong>Order ID:</strong> ${order._id}</p>
-                      <p style="margin: 8px 0;"><strong>Order Date:</strong> ${new Date(order.createdAt).toLocaleDateString()}</p>
-                      <p style="margin: 8px 0;"><strong>Status:</strong> <span style="background: #4CAF50; color: white; padding: 4px 12px; border-radius: 4px;">${(order.status || 'PENDING').toUpperCase()}</span></p>
-                    </div>
-                    <h3 style="color: #4CAF50; border-bottom: 2px solid #4CAF50; padding-bottom: 10px; margin-bottom: 15px;">📍 DELIVERY DETAILS</h3>
-                    <p style="color: #333; margin: 8px 0;"><strong>Name:</strong> ${order.deliveryName || 'N/A'}</p>
-                    <p style="color: #333; margin: 8px 0;"><strong>Phone:</strong> ${order.deliveryPhone || 'N/A'}</p>
-                    <p style="color: #333; margin: 8px 0;"><strong>Address:</strong> ${order.deliveryAddress || 'N/A'}</p>
-                    <p style="color: #333; margin: 8px 0;"><strong>City:</strong> ${order.deliveryLocation || 'N/A'}</p>
-                    <h3 style="color: #4CAF50; border-bottom: 2px solid #4CAF50; padding-bottom: 10px; margin: 30px 0 15px 0;">📦 ORDER ITEMS</h3>
-                    <table style="width: 100%; border-collapse: collapse;">
-                      <thead>
-                        <tr style="background: #f0f0f0;">
-                          <th style="padding: 12px; text-align: left; border-bottom: 2px solid #4CAF50;">Product</th>
-                          <th style="padding: 12px; text-align: center; border-bottom: 2px solid #4CAF50;">Qty</th>
-                          <th style="padding: 12px; text-align: right; border-bottom: 2px solid #4CAF50;">Price</th>
-                          <th style="padding: 12px; text-align: right; border-bottom: 2px solid #4CAF50;">Total</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        ${itemsHtml}
-                      </tbody>
-                    </table>
-                    <div style="background: #f9f9f9; padding: 20px; margin-top: 20px; border-radius: 4px;">
-                      <p style="margin: 8px 0; text-align: right;"><strong>Subtotal:</strong> ₹${order.subtotal.toFixed(2)}</p>
-                      <p style="margin: 8px 0; text-align: right;"><strong>Tax (10%):</strong> ₹${order.tax.toFixed(2)}</p>
-                      <p style="margin: 8px 0; text-align: right;"><strong>Shipping:</strong> ₹${order.shipping.toFixed(2)}</p>
-                      <p style="margin: 15px 0 0 0; text-align: right; font-size: 18px; color: #4CAF50;"><strong>Total: ₹${order.total.toFixed(2)}</strong></p>
-                    </div>
-                    <p style="color: #666; font-size: 14px; margin-top: 30px;">We'll send you updates on your order status. Track your package anytime!</p>
-                  </div>
-                  <div style="background: #f5f5f5; border-top: 1px solid #ddd; padding: 20px; text-align: center; color: #666; font-size: 12px;">
-                    <p style="margin: 5px 0;">Thank you for shopping with jeevaLeaf 🌿</p>
-                    <p style="margin: 5px 0;">For support: <strong>support@jeevaleaf.com</strong></p>
-                  </div>
-                </div>
-              </body>
-            </html>
-          `;
-
-          const mail = {
-            from: SMTP_FROM,
-            to: order.deliveryEmail,
-            subject: `✅ Order Confirmed - Order #${order._id.toString().slice(-8)}`,
-            html: confirmationHtml
-          };
-
-          // Await the email sending so the process doesn't exit/sleep before completion
-          await transporter.sendMail(mail);
-          console.log(`MAIL SENT SUCCESSFULLY to ${order.deliveryEmail}`);
-        } catch (err) {
-          console.error('❌ Error sending order confirmation email:', err.message);
-          // Do NOT throw error, ensure response is still sent
-        }
+      // Send order confirmation email (via SendGrid)
+      try {
+        await sendOrderEmail(order);
+        console.log(`✅ Order email sent via SendGrid to ${order.deliveryEmail}`);
+      } catch (e) {
+        console.error('❌ Order email failed:', e.message);
       }
 
       return res.json({ success: true, orderId: order._id, order });
@@ -1136,51 +986,35 @@ async function start() {
       }
 
       // Send status update email to customer
-      if (status && status !== oldStatus && transporter && order.deliveryEmail) {
-        console.log(`📧 Sending email - Old: ${oldStatus}, New: ${status}, Email: ${order.deliveryEmail}`);
-        setImmediate(async () => {
-          try {
-            const statusMessages = {
-              'processing': { subject: '🔄 Your Order is Being Processed', message: 'Your order is being processed and will be shipped soon.' },
-              'shipped': { subject: '📦 Your Order Has Been Shipped!', message: 'Great news! Your order has been shipped and is on the way to you.' },
-              'delivered': { subject: '✅ Your Order Has Been Delivered!', message: 'Your order has been successfully delivered. Thank you for shopping with us!' },
-              'cancelled': { subject: '❌ Your Order Has Been Cancelled', message: 'Your order has been cancelled. If you have any questions, please contact us.' }
-            };
+      // Send status update email to customer via SendGrid
+      if (status && status !== oldStatus && order.deliveryEmail) {
+        try {
+          const statusMessages = {
+            'processing': { subject: '🔄 Your Order is Being Processed', message: 'Your order is being processed and will be shipped soon.' },
+            'shipped': { subject: '📦 Your Order Has Been Shipped!', message: 'Great news! Your order has been shipped and is on the way to you.' },
+            'delivered': { subject: '✅ Your Order Has Been Delivered!', message: 'Your order has been successfully delivered. Thank you for shopping with us!' },
+            'cancelled': { subject: '❌ Your Order Has Been Cancelled', message: 'Your order has been cancelled. If you have any questions, please contact us.' }
+          };
 
-            const statusInfo = statusMessages[status] || { subject: `Order Status Updated: ${status}`, message: 'Your order status has been updated.' };
+          const statusInfo = statusMessages[status] || { subject: `Order Status Updated: ${status}`, message: 'Your order status has been updated.' };
+          const html = getStatusEmailHTML(statusInfo, order, status);
 
-            const mail = {
-              from: SMTP_FROM,
-              to: order.deliveryEmail,
-              subject: statusInfo.subject,
-              html: getStatusEmailHTML(statusInfo, order, status)
-            };
-
-            // If the order is delivered, generate and attach the invoice PDF
-            if (status === 'delivered') {
-              try {
-                const buffer = await generateInvoiceBuffer(order);
-                mail.attachments = [
-                  {
-                    filename: `invoice-${order._id}.pdf`,
-                    content: buffer,
-                    contentType: 'application/pdf'
-                  }
-                ];
-                console.log(`📎 Attached invoice PDF for order ${order._id}`);
-              } catch (pdfErr) {
-                console.error('❌ Error generating invoice PDF:', pdfErr.message);
-              }
+          let buffer = null;
+          // If the order is delivered, generate the invoice PDF
+          if (status === 'delivered') {
+            try {
+              buffer = await generateInvoiceBuffer(order);
+              console.log(`📎 Generated invoice PDF for order ${order._id}`);
+            } catch (pdfErr) {
+              console.error('❌ Error generating invoice PDF:', pdfErr.message);
             }
-
-            await transporter.sendMail(mail);
-            console.log(`✅ Status email sent to ${order.deliveryEmail} - Status: ${status}`);
-          } catch (err) {
-            console.error('❌ Error sending status email:', err.message);
           }
-        });
-      } else {
-        console.log(`⏭️ Email not sent - status: ${status}, oldStatus: ${oldStatus}, transporter: ${!!transporter}, email: ${order.deliveryEmail}`);
+
+          await sendStatusEmail(order, status, html, buffer);
+          console.log(`✅ Status email sent via SendGrid to ${order.deliveryEmail}`);
+        } catch (e) {
+          console.error('❌ Status email failed:', e.message);
+        }
       }
 
       return res.json({ success: true, order });
@@ -1374,31 +1208,7 @@ async function start() {
     }
   });
 
-  // Debug: Direct Email Test Route
-  app.post('/api/test-email', async (req, res) => {
-    try {
-      const { email } = req.body;
-      if (!email) return res.status(400).json({ error: 'Email required' });
 
-      if (!transporter) {
-        return res.status(500).json({ error: 'Transporter not initialized. Check SMTP_ variables.' });
-      }
-
-      console.log(`MAIL FUNCTION CALLED for test email to ${email}`);
-      const info = await transporter.sendMail({
-        from: SMTP_FROM,
-        to: email,
-        subject: '🔍 Debug Test Email From Render',
-        text: 'If you receive this, the email piping is working correctly.'
-      });
-      console.log(`MAIL SENT SUCCESSFULLY for test email to ${email}`);
-
-      res.json({ success: true, message: 'Email passed to SMTP server', info });
-    } catch (err) {
-      console.error('❌ Test email failed:', err);
-      res.status(500).json({ success: false, error: err.message, stack: err.stack });
-    }
-  });
 
   const server = app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`);
